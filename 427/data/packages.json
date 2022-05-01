@@ -1,0 +1,78 @@
+{
+  "uid" : "83edc06c07f9ae9e47eb6dd1b683e4e2",
+  "children" : [ {
+    "name" : "integration.tests.test_output_to_elasticsearch",
+    "children" : [ {
+      "name" : "test_elastic_index_exists[file-system]",
+      "uid" : "11eabdfe4b6754d7",
+      "parentUid" : "2486f8c3a69fed2cd31004c407a07af0",
+      "status" : "passed",
+      "time" : {
+        "start" : 1651420161514,
+        "stop" : 1651420162548,
+        "duration" : 1034
+      },
+      "flaky" : false,
+      "newFailed" : false,
+      "parameters" : [ "'file-system'" ]
+    }, {
+      "name" : "test_elastic_index_exists[process]",
+      "uid" : "bd64f279c672d360",
+      "parentUid" : "2486f8c3a69fed2cd31004c407a07af0",
+      "status" : "passed",
+      "time" : {
+        "start" : 1651420162551,
+        "stop" : 1651420162569,
+        "duration" : 18
+      },
+      "flaky" : false,
+      "newFailed" : false,
+      "parameters" : [ "'process'" ]
+    }, {
+      "name" : "test_elastic_index_exists[kube-api]",
+      "uid" : "90a1e87f7673920a",
+      "parentUid" : "2486f8c3a69fed2cd31004c407a07af0",
+      "status" : "passed",
+      "time" : {
+        "start" : 1651420162571,
+        "stop" : 1651420162617,
+        "duration" : 46
+      },
+      "flaky" : false,
+      "newFailed" : false,
+      "parameters" : [ "'kube-api'" ]
+    } ],
+    "uid" : "integration.tests.test_output_to_elasticsearch"
+  }, {
+    "name" : "product.tests.test_cloudbeat",
+    "children" : [ {
+      "name" : "test_cloudbeat_pod_exist",
+      "uid" : "3e3cb700899db9a3",
+      "parentUid" : "4dd822d9bf635fe1910b9d1367e2d31a",
+      "status" : "passed",
+      "time" : {
+        "start" : 1651420162673,
+        "stop" : 1651420162673,
+        "duration" : 0
+      },
+      "flaky" : false,
+      "newFailed" : false,
+      "parameters" : [ ]
+    }, {
+      "name" : "test_cloudbeat_pods_running",
+      "uid" : "bdcd91c8229a8c52",
+      "parentUid" : "4dd822d9bf635fe1910b9d1367e2d31a",
+      "status" : "passed",
+      "time" : {
+        "start" : 1651420162715,
+        "stop" : 1651420162715,
+        "duration" : 0
+      },
+      "flaky" : false,
+      "newFailed" : false,
+      "parameters" : [ ]
+    } ],
+    "uid" : "product.tests.test_cloudbeat"
+  } ],
+  "name" : "packages"
+}
