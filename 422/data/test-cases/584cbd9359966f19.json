@@ -1,12 +1,12 @@
 {
-  "uid" : "6532cc3c276fa585",
-  "name" : "test_elastic_index_exists[kube-api]",
+  "uid" : "584cbd9359966f19",
+  "name" : "test_elastic_index_exists[k8s_object]",
   "fullName" : "integration.tests.test_output_to_elasticsearch#test_elastic_index_exists",
-  "historyId" : "0849778540401697274d540ce0ac6217",
+  "historyId" : "b2ea9c4dc87bf9bdd7179c8949c8fa4a",
   "time" : {
-    "start" : 1651137657515,
-    "stop" : 1651137657544,
-    "duration" : 29
+    "start" : 1651411580899,
+    "stop" : 1651411581046,
+    "duration" : 147
   },
   "description" : "\n    This test verifies that findings of all types are sending to elasticsearch\n    :param elastic_client: Elastic API client\n    :param match_type: Findings type for matching\n    :return:\n    ",
   "descriptionHtml" : "<pre><code>This test verifies that findings of all types are sending to elasticsearch\n:param elastic_client: Elastic API client\n:param match_type: Findings type for matching\n:return:\n</code></pre>\n",
@@ -14,10 +14,10 @@
   "flaky" : false,
   "newFailed" : false,
   "beforeStages" : [ {
-    "name" : "k8s",
+    "name" : "elastic_client",
     "time" : {
-      "start" : 1651137656503,
-      "stop" : 1651137656504,
+      "start" : 1651411579556,
+      "stop" : 1651411579557,
       "duration" : 1
     },
     "status" : "passed",
@@ -31,23 +31,8 @@
   }, {
     "name" : "api_client",
     "time" : {
-      "start" : 1651137656502,
-      "stop" : 1651137656502,
-      "duration" : 0
-    },
-    "status" : "passed",
-    "steps" : [ ],
-    "attachments" : [ ],
-    "parameters" : [ ],
-    "stepsCount" : 0,
-    "attachmentsCount" : 0,
-    "shouldDisplayMessage" : false,
-    "hasContent" : false
-  }, {
-    "name" : "elastic_client",
-    "time" : {
-      "start" : 1651137656502,
-      "stop" : 1651137656503,
+      "start" : 1651411579555,
+      "stop" : 1651411579556,
       "duration" : 1
     },
     "status" : "passed",
@@ -61,9 +46,24 @@
   }, {
     "name" : "cloudbeat_agent",
     "time" : {
-      "start" : 1651137656502,
-      "stop" : 1651137656502,
+      "start" : 1651411579556,
+      "stop" : 1651411579556,
       "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "k8s",
+    "time" : {
+      "start" : 1651411579557,
+      "stop" : 1651411579558,
+      "duration" : 1
     },
     "status" : "passed",
     "steps" : [ ],
@@ -79,11 +79,11 @@
     "status" : "passed",
     "steps" : [ ],
     "attachments" : [ {
-      "uid" : "6eef195db880393b",
-      "name" : "kube-api",
-      "source" : "6eef195db880393b.json",
+      "uid" : "944af4016adde778",
+      "name" : "k8s_object",
+      "source" : "944af4016adde778.json",
       "type" : "application/json",
-      "size" : 4772
+      "size" : 4931
     } ],
     "parameters" : [ ],
     "stepsCount" : 0,
@@ -109,7 +109,7 @@
     "value" : "test-pod-v1"
   }, {
     "name" : "thread",
-    "value" : "10-MainThread"
+    "value" : "8-MainThread"
   }, {
     "name" : "framework",
     "value" : "pytest"
@@ -125,7 +125,7 @@
   } ],
   "parameters" : [ {
     "name" : "match_type",
-    "value" : "'kube-api'"
+    "value" : "'k8s_object'"
   } ],
   "links" : [ ],
   "hidden" : false,
@@ -137,34 +137,44 @@
     "history" : {
       "statistic" : {
         "failed" : 0,
-        "broken" : 0,
+        "broken" : 1,
         "skipped" : 0,
         "passed" : 3,
         "unknown" : 0,
-        "total" : 3
+        "total" : 4
       },
       "items" : [ {
-        "uid" : "66f6e7489c61ef55",
-        "reportUrl" : "https://elastic.github.io/cloudbeat/401//#testresult/66f6e7489c61ef55",
-        "status" : "passed",
+        "uid" : "187f4cd8d94aba71",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/422//#testresult/187f4cd8d94aba71",
+        "status" : "broken",
+        "statusDetails" : "IndexError: list index out of range",
         "time" : {
-          "start" : 1651137154471,
-          "stop" : 1651137154560,
-          "duration" : 89
+          "start" : 1651410509669,
+          "stop" : 1651410509678,
+          "duration" : 9
         }
       }, {
-        "uid" : "91bda8b3a13e35d6",
-        "reportUrl" : "https://elastic.github.io/cloudbeat/400//#testresult/91bda8b3a13e35d6",
+        "uid" : "71d60977177e86ca",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/418//#testresult/71d60977177e86ca",
         "status" : "passed",
         "time" : {
-          "start" : 1651136987933,
-          "stop" : 1651136987950,
-          "duration" : 17
+          "start" : 1651406481200,
+          "stop" : 1651406481258,
+          "duration" : 58
+        }
+      }, {
+        "uid" : "9ce2108d367026af",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/417//#testresult/9ce2108d367026af",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651405780423,
+          "stop" : 1651405780514,
+          "duration" : 91
         }
       } ]
     },
     "tags" : [ "ci_cloudbeat", "integration" ]
   },
-  "source" : "6532cc3c276fa585.json",
-  "parameterValues" : [ "'kube-api'" ]
+  "source" : "584cbd9359966f19.json",
+  "parameterValues" : [ "'k8s_object'" ]
 }

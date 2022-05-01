@@ -1,8 +1,8 @@
 {
-    "@timestamp": "2022-04-28T09:20:44.820Z",
+    "@timestamp": "2022-05-01T13:26:08.046Z",
     "agent": {
-        "ephemeral_id": "e8afc1f9-44fd-4d11-81c4-df72f86f3624",
-        "id": "7c8641c5-9120-4f54-bf05-5f82e7bdc818",
+        "ephemeral_id": "ae24d76e-1e1a-425f-9068-a2177f4d4ea3",
+        "id": "a776449d-9e0e-4801-b5e4-5b5b36d64072",
         "name": "kind-mono-control-plane",
         "type": "cloudbeat",
         "version": "8.3.0"
@@ -10,20 +10,20 @@
     "cloud": {
         "account": {},
         "instance": {
-            "id": "b549cd66-4f1e-47aa-92bc-82bff801e01d",
-            "name": "EUS2-GHEUS21UBT20EUS29-0379"
+            "id": "c50745f0-0b83-4d27-820e-80054315d493",
+            "name": "EUS-GHEUS21U20EUSC33-0127"
         },
         "machine": {
             "type": "Standard_DS2_v2"
         },
         "provider": "azure",
-        "region": "eastus2",
+        "region": "eastus",
         "service": {
             "name": "Virtual Machines"
         }
     },
-    "cluster_id": "ddc67e69-0d70-4fc6-ac23-964f3c100784",
-    "cycle_id": "427d7d36-efc3-4312-bb0b-53d647d82082",
+    "cluster_id": "891e8840-f0f4-4700-a6ee-e91e452b623a",
+    "cycle_id": "4eea0223-e0a9-4fbe-8da9-12def04152db",
     "ecs": {
         "version": "8.0.0"
     },
@@ -42,10 +42,10 @@
         ],
         "mac": [
             "02:42:ac:12:00:02",
-            "8a:5a:0e:96:26:71",
-            "ae:df:8e:d3:7d:37",
-            "ca:47:96:35:35:a5",
-            "e6:8d:ae:e3:3c:99"
+            "4e:5b:a1:32:13:0d",
+            "7a:1f:cf:6b:f7:bf",
+            "e6:24:9a:d3:c7:d1",
+            "fa:c1:7b:c8:90:02"
         ],
         "name": "kind-mono-control-plane",
         "os": {
@@ -59,22 +59,28 @@
         }
     },
     "resource": {
-        "apiVersion": "v1",
-        "kind": "ServiceAccount",
-        "metadata": {
-            "creationTimestamp": "2022-04-28T09:14:01Z",
-            "name": "default",
-            "namespace": "kube-system",
-            "resourceVersion": "443",
-            "uid": "55c1ddff-fbf8-4c73-8176-e20d8db8cc33"
+        "id": "8e736b54-0b8f-4cad-875e-579bb72a6997",
+        "name": "kindnet",
+        "raw": {
+            "apiVersion": "v1",
+            "kind": "ServiceAccount",
+            "metadata": {
+                "creationTimestamp": "2022-05-01T13:20:40Z",
+                "name": "kindnet",
+                "namespace": "kube-system",
+                "resourceVersion": "277",
+                "uid": "8e736b54-0b8f-4cad-875e-579bb72a6997"
+            },
+            "secrets": [
+                {
+                    "name": "kindnet-token-zxnxw"
+                }
+            ]
         },
-        "secrets": [
-            {
-                "name": "default-token-frhct"
-            }
-        ]
+        "sub_type": "ServiceAccount",
+        "type": "k8s_object"
     },
-    "resource_id": "ddc67e69-0d70-4fc6-ac23-964f3c1007845ca5fa5d-cc06-4cdb-bcf7-e47eb693484755c1ddff-fbf8-4c73-8176-e20d8db8cc33",
+    "resource_id": "8e736b54-0b8f-4cad-875e-579bb72a6997",
     "result": {
         "evaluation": "passed",
         "evidence": {
@@ -107,5 +113,5 @@
         ],
         "version": "1.0"
     },
-    "type": "kube-api"
+    "type": "k8s_object"
 }

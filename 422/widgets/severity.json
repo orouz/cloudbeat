@@ -1,50 +1,50 @@
 [ {
-  "uid" : "eb9d20aa47f9f704",
-  "name" : "test_elastic_index_exists[process]",
-  "time" : {
-    "start" : 1651410509651,
-    "stop" : 1651410509660,
-    "duration" : 9
-  },
-  "status" : "broken",
-  "severity" : "normal"
-}, {
-  "uid" : "187f4cd8d94aba71",
-  "name" : "test_elastic_index_exists[k8s_object]",
-  "time" : {
-    "start" : 1651410509669,
-    "stop" : 1651410509678,
-    "duration" : 9
-  },
-  "status" : "broken",
-  "severity" : "normal"
-}, {
-  "uid" : "5ce5f42190d6576f",
-  "name" : "test_elastic_index_exists[file]",
-  "time" : {
-    "start" : 1651410509513,
-    "stop" : 1651410509640,
-    "duration" : 127
-  },
-  "status" : "broken",
-  "severity" : "normal"
-}, {
-  "uid" : "9e389fd4a06338ea",
-  "name" : "test_cloudbeat_pods_running",
-  "time" : {
-    "start" : 1651410509836,
-    "stop" : 1651410509836,
-    "duration" : 0
-  },
-  "status" : "failed",
-  "severity" : "normal"
-}, {
-  "uid" : "8357b085db0ef994",
+  "uid" : "b30b7575bcb8fbc9",
   "name" : "test_cloudbeat_pod_exist",
   "time" : {
-    "start" : 1651410509773,
-    "stop" : 1651410509773,
+    "start" : 1651411581158,
+    "stop" : 1651411581158,
     "duration" : 0
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "b4f6e9e5c5f4fed0",
+  "name" : "test_elastic_index_exists[file]",
+  "time" : {
+    "start" : 1651411579558,
+    "stop" : 1651411580754,
+    "duration" : 1196
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "ec163172ecce2345",
+  "name" : "test_cloudbeat_pods_running",
+  "time" : {
+    "start" : 1651411581222,
+    "stop" : 1651411581222,
+    "duration" : 0
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "584cbd9359966f19",
+  "name" : "test_elastic_index_exists[k8s_object]",
+  "time" : {
+    "start" : 1651411580899,
+    "stop" : 1651411581046,
+    "duration" : 147
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "61f26c822ebba2d5",
+  "name" : "test_elastic_index_exists[process]",
+  "time" : {
+    "start" : 1651411580758,
+    "stop" : 1651411580896,
+    "duration" : 138
   },
   "status" : "passed",
   "severity" : "normal"
