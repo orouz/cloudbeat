@@ -1,0 +1,110 @@
+{
+    "@timestamp": "2022-05-01T09:12:57.601Z",
+    "agent": {
+        "ephemeral_id": "454aed44-86b1-4c7c-be37-69fb17a7f0b0",
+        "id": "119e25da-8901-442a-ba39-2f03674ff6c3",
+        "name": "kind-mono-control-plane",
+        "type": "cloudbeat",
+        "version": "8.3.0"
+    },
+    "cloud": {
+        "account": {},
+        "instance": {
+            "id": "985c39db-f476-4da1-8f6f-f968954e66a7",
+            "name": "EUS-GHEUS21UBT20EUS4-0102"
+        },
+        "machine": {
+            "type": "Standard_DS2_v2"
+        },
+        "provider": "azure",
+        "region": "eastus",
+        "service": {
+            "name": "Virtual Machines"
+        }
+    },
+    "cluster_id": "2bf27cd6-1062-4dc5-ab35-beb6caa2f9d6",
+    "cycle_id": "9d78767b-4f8d-4944-bd00-3a746d28e27d",
+    "ecs": {
+        "version": "8.0.0"
+    },
+    "host": {
+        "architecture": "x86_64",
+        "containerized": true,
+        "hostname": "kind-mono-control-plane",
+        "ip": [
+            "10.244.0.1",
+            "10.244.0.1",
+            "10.244.0.1",
+            "10.244.0.1",
+            "172.18.0.2",
+            "fc00:f853:ccd:e793::2",
+            "fe80::42:acff:fe12:2"
+        ],
+        "mac": [
+            "02:42:ac:12:00:02",
+            "16:5a:9a:66:f1:8d",
+            "72:7e:76:f7:6b:8d",
+            "ea:71:4a:a4:de:89",
+            "f2:f8:0c:45:1c:6c"
+        ],
+        "name": "kind-mono-control-plane",
+        "os": {
+            "codename": "bullseye",
+            "family": "debian",
+            "kernel": "5.13.0-1022-azure",
+            "name": "Debian GNU/Linux",
+            "platform": "debian",
+            "type": "linux",
+            "version": "11 (bullseye)"
+        }
+    },
+    "resource": {
+        "id": "1834410",
+        "raw": {
+            "filename": "pki",
+            "gid": "root",
+            "inode": "1834410",
+            "mode": "755",
+            "path": "/hostfs/etc/kubernetes/pki",
+            "uid": "root"
+        },
+        "type": "file-system"
+    },
+    "resource_id": "1834410",
+    "result": {
+        "evaluation": "passed",
+        "evidence": {
+            "gid": "root",
+            "uid": "root"
+        },
+        "expected": {
+            "gid": "root",
+            "uid": "root"
+        }
+    },
+    "rule": {
+        "audit": "Run the below command (based on the file location on your system) on the\nmaster node.\nFor example,\n```\nls -laR /etc/kubernetes/pki/\n```\nVerify that the ownership of all files and directories in this hierarchy is set to `root:root`.\n",
+        "benchmark": {
+            "name": "CIS Kubernetes V1.20",
+            "version": "v1.0.0"
+        },
+        "default_value": "By default, the `/etc/kubernetes/pki/` directory and all of the files and directories contained within it, are set to be owned by the root user.\n",
+        "description": "Ensure that the Kubernetes PKI directory and file ownership is set to `root:root`.\n",
+        "id": "905adab5-b2a6-587e-b67f-bb21c7853e9e",
+        "impact": "None\n",
+        "name": "Ensure that the Kubernetes PKI directory and file ownership is set to root:root (Automated)",
+        "profile_applicability": "* Level 1 - Master Node\n",
+        "rationale": "Kubernetes makes use of a number of certificates as part of its operation. You should set the ownership of the directory containing the PKI information and all files in that directory to maintain their integrity. The directory and files should be owned by root:root.\n",
+        "references": "1. [https://kubernetes.io/docs/admin/kube-apiserver/](https://kubernetes.io/docs/admin/kube-apiserver/)\n",
+        "remediation": "Run the below command (based on the file location on your system) on the\nmaster node.\nFor example,\n```\nchown -R root:root /etc/kubernetes/pki/\n```\n",
+        "section": "Master Node Configuration Files",
+        "tags": [
+            "CIS",
+            "Kubernetes",
+            "CIS 1.1.19",
+            "Master Node Configuration Files"
+        ],
+        "version": "1.0"
+    },
+    "type": "file-system"
+}
