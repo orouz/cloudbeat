@@ -1,0 +1,283 @@
+{
+  "uid" : "7784dd965fc83aaf",
+  "name" : "test_elastic_index_exists[file-system]",
+  "fullName" : "integration.tests.test_output_to_elasticsearch#test_elastic_index_exists",
+  "historyId" : "cc56ce2a2e1c0b858a9d89c179efe78c",
+  "time" : {
+    "start" : 1651418357829,
+    "stop" : 1651418358863,
+    "duration" : 1034
+  },
+  "description" : "\n    This test verifies that findings of all types are sending to elasticsearch\n    :param elastic_client: Elastic API client\n    :param match_type: Findings type for matching\n    :return:\n    ",
+  "descriptionHtml" : "<pre><code>This test verifies that findings of all types are sending to elasticsearch\n:param elastic_client: Elastic API client\n:param match_type: Findings type for matching\n:return:\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "api_client",
+    "time" : {
+      "start" : 1651418357826,
+      "stop" : 1651418357826,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "k8s",
+    "time" : {
+      "start" : 1651418357827,
+      "stop" : 1651418357829,
+      "duration" : 2
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "cloudbeat_agent",
+    "time" : {
+      "start" : 1651418357826,
+      "stop" : 1651418357826,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "elastic_client",
+    "time" : {
+      "start" : 1651418357826,
+      "stop" : 1651418357827,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "testStage" : {
+    "description" : "\n    This test verifies that findings of all types are sending to elasticsearch\n    :param elastic_client: Elastic API client\n    :param match_type: Findings type for matching\n    :return:\n    ",
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "114ca0fc3d169f97",
+      "name" : "file-system",
+      "source" : "114ca0fc3d169f97.json",
+      "type" : "application/json",
+      "size" : 4194
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "tag",
+    "value" : "ci_cloudbeat"
+  }, {
+    "name" : "tag",
+    "value" : "integration"
+  }, {
+    "name" : "parentSuite",
+    "value" : "integration.tests"
+  }, {
+    "name" : "suite",
+    "value" : "test_output_to_elasticsearch"
+  }, {
+    "name" : "host",
+    "value" : "test-pod-v1"
+  }, {
+    "name" : "thread",
+    "value" : "9-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "integration.tests.test_output_to_elasticsearch"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "match_type",
+    "value" : "'file-system'"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 5,
+        "skipped" : 0,
+        "passed" : 10,
+        "unknown" : 0,
+        "total" : 15
+      },
+      "items" : [ {
+        "uid" : "b4efe9ffac499f21",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/423//#testresult/b4efe9ffac499f21",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651412412818,
+          "stop" : 1651412413997,
+          "duration" : 1179
+        }
+      }, {
+        "uid" : "ff63859c31820328",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/421//#testresult/ff63859c31820328",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651408158717,
+          "stop" : 1651408159981,
+          "duration" : 1264
+        }
+      }, {
+        "uid" : "66572e0c47fe4b1e",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/419//#testresult/66572e0c47fe4b1e",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651407227750,
+          "stop" : 1651407228698,
+          "duration" : 948
+        }
+      }, {
+        "uid" : "31745d5f705aa0d1",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/416//#testresult/31745d5f705aa0d1",
+        "status" : "broken",
+        "statusDetails" : "IndexError: list index out of range",
+        "time" : {
+          "start" : 1651402501281,
+          "stop" : 1651402502690,
+          "duration" : 1409
+        }
+      }, {
+        "uid" : "1fd83be17dd9d2d9",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/415//#testresult/1fd83be17dd9d2d9",
+        "status" : "broken",
+        "statusDetails" : "IndexError: list index out of range",
+        "time" : {
+          "start" : 1651401257347,
+          "stop" : 1651401258597,
+          "duration" : 1250
+        }
+      }, {
+        "uid" : "e7dc280b431036c",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/414//#testresult/e7dc280b431036c",
+        "status" : "broken",
+        "statusDetails" : "IndexError: list index out of range",
+        "time" : {
+          "start" : 1651401172869,
+          "stop" : 1651401173764,
+          "duration" : 895
+        }
+      }, {
+        "uid" : "7393a64f224f4e4d",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/413//#testresult/7393a64f224f4e4d",
+        "status" : "broken",
+        "statusDetails" : "IndexError: list index out of range",
+        "time" : {
+          "start" : 1651401174637,
+          "stop" : 1651401176024,
+          "duration" : 1387
+        }
+      }, {
+        "uid" : "61aef5264e9fbc0a",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/412//#testresult/61aef5264e9fbc0a",
+        "status" : "broken",
+        "statusDetails" : "IndexError: list index out of range",
+        "time" : {
+          "start" : 1651401001226,
+          "stop" : 1651401002131,
+          "duration" : 905
+        }
+      }, {
+        "uid" : "9833530a977336a8",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/411//#testresult/9833530a977336a8",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651396388987,
+          "stop" : 1651396389954,
+          "duration" : 967
+        }
+      }, {
+        "uid" : "4b95dbd4fe805cad",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/410//#testresult/4b95dbd4fe805cad",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651392322843,
+          "stop" : 1651392323500,
+          "duration" : 657
+        }
+      }, {
+        "uid" : "65291d6043f8fe94",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/409//#testresult/65291d6043f8fe94",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651172528749,
+          "stop" : 1651172530116,
+          "duration" : 1367
+        }
+      }, {
+        "uid" : "15c0489b0b3f14e7",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/408//#testresult/15c0489b0b3f14e7",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651165110611,
+          "stop" : 1651165111660,
+          "duration" : 1049
+        }
+      }, {
+        "uid" : "758f7d2f94bc4dc0",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/407//#testresult/758f7d2f94bc4dc0",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651164768530,
+          "stop" : 1651164769711,
+          "duration" : 1181
+        }
+      }, {
+        "uid" : "883d9b5d7d3ca556",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/406//#testresult/883d9b5d7d3ca556",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651161460498,
+          "stop" : 1651161462132,
+          "duration" : 1634
+        }
+      } ]
+    },
+    "tags" : [ "ci_cloudbeat", "integration" ]
+  },
+  "source" : "7784dd965fc83aaf.json",
+  "parameterValues" : [ "'file-system'" ]
+}
