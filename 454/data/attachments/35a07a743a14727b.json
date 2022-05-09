@@ -1,0 +1,244 @@
+{
+    "@timestamp": "2022-05-09T04:27:12.988Z",
+    "agent": {
+        "ephemeral_id": "15513e16-dd3c-4c80-8156-613f82db6427",
+        "id": "a82382ba-2852-4236-aa8d-6d0183f05d42",
+        "name": "kind-mono-control-plane",
+        "type": "cloudbeat",
+        "version": "8.3.0"
+    },
+    "cloud": {
+        "account": {},
+        "instance": {
+            "id": "8ee0276c-91c9-42ee-b1eb-6d1a87370bc4",
+            "name": "EUS-EUS21GHUBT20EUS00-0410"
+        },
+        "machine": {
+            "type": "Standard_DS2_v2"
+        },
+        "provider": "azure",
+        "region": "eastus",
+        "service": {
+            "name": "Virtual Machines"
+        }
+    },
+    "cluster_id": "0dacb628-0c4b-46c2-9148-ae595b06bc1a",
+    "cycle_id": "9c6c4a9f-239b-4b5f-8000-7047211135c0",
+    "ecs": {
+        "version": "8.0.0"
+    },
+    "host": {
+        "architecture": "x86_64",
+        "containerized": true,
+        "hostname": "kind-mono-control-plane",
+        "ip": [
+            "10.244.0.1",
+            "10.244.0.1",
+            "10.244.0.1",
+            "10.244.0.1",
+            "172.18.0.2",
+            "fc00:f853:ccd:e793::2",
+            "fe80::42:acff:fe12:2"
+        ],
+        "mac": [
+            "02:42:ac:12:00:02",
+            "d2:65:af:0b:7e:2e",
+            "d6:b1:8b:f7:df:59",
+            "da:03:b6:68:69:30",
+            "e6:8e:c3:f2:e7:90"
+        ],
+        "name": "kind-mono-control-plane",
+        "os": {
+            "codename": "bullseye",
+            "family": "debian",
+            "kernel": "5.13.0-1022-azure",
+            "name": "Debian GNU/Linux",
+            "platform": "debian",
+            "type": "linux",
+            "version": "11 (bullseye)"
+        }
+    },
+    "resource": {
+        "id": "c3ec90f5-6230-552e-93a0-92bb810329c3",
+        "name": "kubelet",
+        "raw": {
+            "command": "/usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --container-runtime=remote --container-runtime-endpoint=unix:///run/containerd/containerd.sock --fail-swap-on=false --node-ip=172.18.0.2 --node-labels= --pod-infra-container-image=k8s.gcr.io/pause:3.4.1 --provider-id=kind://docker/kind-mono/kind-mono-control-plane --fail-swap-on=false --cgroup-root=/kubelet",
+            "external_data": {
+                "config": {
+                    "apiVersion": "kubelet.config.k8s.io/v1beta1",
+                    "authentication": {
+                        "anonymous": {
+                            "enabled": false
+                        },
+                        "webhook": {
+                            "cacheTTL": "0s",
+                            "enabled": true
+                        },
+                        "x509": {
+                            "clientCAFile": "/etc/kubernetes/pki/ca.crt"
+                        }
+                    },
+                    "authorization": {
+                        "mode": "Webhook",
+                        "webhook": {
+                            "cacheAuthorizedTTL": "0s",
+                            "cacheUnauthorizedTTL": "0s"
+                        }
+                    },
+                    "cgroupDriver": "cgroupfs",
+                    "clusterDNS": [
+                        "10.96.0.10"
+                    ],
+                    "clusterDomain": "cluster.local",
+                    "cpuManagerReconcilePeriod": "0s",
+                    "evictionHard": {
+                        "imagefs.available": "0%",
+                        "nodefs.available": "0%",
+                        "nodefs.inodesFree": "0%"
+                    },
+                    "evictionPressureTransitionPeriod": "0s",
+                    "fileCheckFrequency": "0s",
+                    "healthzBindAddress": "127.0.0.1",
+                    "healthzPort": 10248,
+                    "httpCheckFrequency": "0s",
+                    "imageGCHighThresholdPercent": 100,
+                    "imageMinimumGCAge": "0s",
+                    "kind": "KubeletConfiguration",
+                    "logging": {},
+                    "nodeStatusReportFrequency": "0s",
+                    "nodeStatusUpdateFrequency": "0s",
+                    "rotateCertificates": true,
+                    "runtimeRequestTimeout": "0s",
+                    "shutdownGracePeriod": "0s",
+                    "shutdownGracePeriodCriticalPods": "0s",
+                    "staticPodPath": "/etc/kubernetes/manifests",
+                    "streamingConnectionIdleTimeout": "0s",
+                    "syncFrequency": "0s",
+                    "volumeStatsAggPeriod": "0s"
+                }
+            },
+            "pid": "703",
+            "stat": {
+                "EffectiveGID": "",
+                "EffectiveUID": "",
+                "Group": "703",
+                "Name": "kubelet",
+                "Nice": "0",
+                "Parent": "1",
+                "RealGID": "",
+                "RealUID": "",
+                "ResidentSize": "113548000",
+                "SavedGID": "",
+                "SavedUID": "",
+                "StartTime": "53990",
+                "State": "S",
+                "SystemTime": "227",
+                "Threads": "14",
+                "TotalSize": "1889464000",
+                "UserTime": "408"
+            }
+        },
+        "sub_type": "process",
+        "type": "process"
+    },
+    "resource_id": "c3ec90f5-6230-552e-93a0-92bb810329c3",
+    "result": {
+        "evaluation": "failed",
+        "evidence": {
+            "process_args": {
+                "--/usr/bin/kubelet": "",
+                "--bootstrap-kubeconfig": "/etc/kubernetes/bootstrap-kubelet.conf",
+                "--cgroup-root": "/kubelet",
+                "--config": "/var/lib/kubelet/config.yaml",
+                "--container-runtime": "remote",
+                "--container-runtime-endpoint": "unix:///run/containerd/containerd.sock",
+                "--fail-swap-on": "false",
+                "--kubeconfig": "/etc/kubernetes/kubelet.conf",
+                "--node-ip": "172.18.0.2",
+                "--node-labels": "",
+                "--pod-infra-container-image": "k8s.gcr.io/pause:3.4.1",
+                "--provider-id": "kind://docker/kind-mono/kind-mono-control-plane"
+            },
+            "process_config": {
+                "config": {
+                    "apiVersion": "kubelet.config.k8s.io/v1beta1",
+                    "authentication": {
+                        "anonymous": {
+                            "enabled": false
+                        },
+                        "webhook": {
+                            "cacheTTL": "0s",
+                            "enabled": true
+                        },
+                        "x509": {
+                            "clientCAFile": "/etc/kubernetes/pki/ca.crt"
+                        }
+                    },
+                    "authorization": {
+                        "mode": "Webhook",
+                        "webhook": {
+                            "cacheAuthorizedTTL": "0s",
+                            "cacheUnauthorizedTTL": "0s"
+                        }
+                    },
+                    "cgroupDriver": "cgroupfs",
+                    "clusterDNS": [
+                        "10.96.0.10"
+                    ],
+                    "clusterDomain": "cluster.local",
+                    "cpuManagerReconcilePeriod": "0s",
+                    "evictionHard": {
+                        "imagefs.available": "0%",
+                        "nodefs.available": "0%",
+                        "nodefs.inodesFree": "0%"
+                    },
+                    "evictionPressureTransitionPeriod": "0s",
+                    "fileCheckFrequency": "0s",
+                    "healthzBindAddress": "127.0.0.1",
+                    "healthzPort": 10248,
+                    "httpCheckFrequency": "0s",
+                    "imageGCHighThresholdPercent": 100,
+                    "imageMinimumGCAge": "0s",
+                    "kind": "KubeletConfiguration",
+                    "logging": {},
+                    "nodeStatusReportFrequency": "0s",
+                    "nodeStatusUpdateFrequency": "0s",
+                    "rotateCertificates": true,
+                    "runtimeRequestTimeout": "0s",
+                    "shutdownGracePeriod": "0s",
+                    "shutdownGracePeriodCriticalPods": "0s",
+                    "staticPodPath": "/etc/kubernetes/manifests",
+                    "streamingConnectionIdleTimeout": "0s",
+                    "syncFrequency": "0s",
+                    "volumeStatsAggPeriod": "0s"
+                }
+            }
+        },
+        "expected": null
+    },
+    "rule": {
+        "audit": "Run the following command on each node:\n```\nps -ef | grep kubelet\n```\nReview the value set for the `--event-qps` argument and determine whether this has been\nset to an appropriate level for the cluster. The value of `0` can be used to ensure that all\nevents are captured.\nIf the `--event-qps` argument does not exist, check that there is a Kubelet config file\nspecified by `--config` and review the value in this location.\n",
+        "benchmark": {
+            "name": "CIS Kubernetes V1.23",
+            "version": "v1.0.0"
+        },
+        "default_value": "By default, `--event-qps` argument is set to `5`.\n",
+        "description": "Security relevant information should be captured. \nThe `--event-qps` flag on the Kubelet can be used to limit the rate at which events are gathered.\nSetting this too low could result in relevant events not being logged, however the unlimited setting of `0` could result in a denial\nof service on the kubelet.\n",
+        "id": "8dad2026-5cfd-5398-ba90-9c329ae6b2ca",
+        "impact": "Setting this parameter to `0` could result in a denial of service condition due to excessive\nevents being created. The cluster's event processing and storage systems should be scaled\nto handle expected event loads.\n",
+        "name": "Ensure that the --event-qps argument is set to 0 or a level which ensures appropriate event capture (Manual)",
+        "profile_applicability": "* Level 2 - Worker Node\n",
+        "rationale": "It is important to capture all events and not restrict event creation. \nEvents are an important source of security information and analytics that ensure that your environment is\nconsistently monitored using the event data.\n",
+        "references": "1. https://kubernetes.io/docs/admin/kubelet/\n2. https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/apis/kubeletconfig/v1beta1/types.go\n",
+        "remediation": "If using a Kubelet config file, edit the file to set `eventRecordQPS:` to an appropriate level.\nIf using command line arguments, edit the kubelet service file\n`/etc/systemd/system/kubelet.service.d/10-kubeadm.conf` on each worker node and\nset the below parameter in `KUBELET_SYSTEM_PODS_ARGS` variable.\nBased on your system, restart the `kubelet` service. \nFor example:\n```\nsystemctl daemon-reload\nsystemctl restart kubelet.service\n```\n",
+        "section": "Kubelet",
+        "tags": [
+            "CIS",
+            "Kubernetes",
+            "CIS 4.2.9",
+            "Kubelet"
+        ],
+        "version": "1.0"
+    },
+    "type": "process"
+}
