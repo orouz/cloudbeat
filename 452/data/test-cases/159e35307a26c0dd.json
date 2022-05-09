@@ -1,0 +1,177 @@
+{
+  "uid" : "159e35307a26c0dd",
+  "name" : "test_cloudbeat_pods_running",
+  "fullName" : "product.tests.test_cloudbeat#test_cloudbeat_pods_running",
+  "historyId" : "3b2fce48ece491575a06d23ab8f2970e",
+  "time" : {
+    "start" : 1652070224960,
+    "stop" : 1652070224960,
+    "duration" : 0
+  },
+  "description" : "\n    This test verifies that all pods are in status \"Running\"\n    :param data: (Pods list, Nodes list)\n    :return:\n    ",
+  "descriptionHtml" : "<pre><code>This test verifies that all pods are in status &quot;Running&quot;\n:param data: (Pods list, Nodes list)\n:return:\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "k8s",
+    "time" : {
+      "start" : 1652070223197,
+      "stop" : 1652070223198,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "api_client",
+    "time" : {
+      "start" : 1652070223196,
+      "stop" : 1652070223196,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "data",
+    "time" : {
+      "start" : 1652070224914,
+      "stop" : 1652070224959,
+      "duration" : 45
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "cloudbeat_agent",
+    "time" : {
+      "start" : 1652070223196,
+      "stop" : 1652070223196,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "elastic_client",
+    "time" : {
+      "start" : 1652070223196,
+      "stop" : 1652070223197,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "tag",
+    "value" : "ci_cloudbeat"
+  }, {
+    "name" : "tag",
+    "value" : "product"
+  }, {
+    "name" : "tag",
+    "value" : "sanity"
+  }, {
+    "name" : "parentSuite",
+    "value" : "product.tests"
+  }, {
+    "name" : "suite",
+    "value" : "test_cloudbeat"
+  }, {
+    "name" : "host",
+    "value" : "test-pod-v1"
+  }, {
+    "name" : "thread",
+    "value" : "8-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "product.tests.test_cloudbeat"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 0,
+        "skipped" : 0,
+        "passed" : 4,
+        "unknown" : 0,
+        "total" : 4
+      },
+      "items" : [ {
+        "uid" : "3a36532379f78f98",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/443//#testresult/3a36532379f78f98",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651992703806,
+          "stop" : 1651992703806,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "cef862cfcef2e87f",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/442//#testresult/cef862cfcef2e87f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651655631532,
+          "stop" : 1651655631532,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "673b24c5db2a8c5c",
+        "reportUrl" : "https://elastic.github.io/cloudbeat/441//#testresult/673b24c5db2a8c5c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1651654033655,
+          "stop" : 1651654033655,
+          "duration" : 0
+        }
+      } ]
+    },
+    "tags" : [ "product", "ci_cloudbeat", "sanity" ]
+  },
+  "source" : "159e35307a26c0dd.json",
+  "parameterValues" : [ ]
+}
