@@ -1,1 +1,102 @@
-{ }
+{
+  "2b1e2140076344281470f26864fe11ca" : {
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 1,
+      "unknown" : 0,
+      "total" : 1
+    },
+    "items" : [ {
+      "uid" : "f55dd1eb30e20f40",
+      "reportUrl" : "https://elastic.github.io/cloudbeat/471//#testresult/f55dd1eb30e20f40",
+      "status" : "passed",
+      "time" : {
+        "start" : 1652281933772,
+        "stop" : 1652281933853,
+        "duration" : 81
+      }
+    } ]
+  },
+  "b2ea9c4dc87bf9bdd7179c8949c8fa4a" : {
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 1,
+      "unknown" : 0,
+      "total" : 1
+    },
+    "items" : [ {
+      "uid" : "ad82231ef3501db5",
+      "reportUrl" : "https://elastic.github.io/cloudbeat/471//#testresult/ad82231ef3501db5",
+      "status" : "passed",
+      "time" : {
+        "start" : 1652281933856,
+        "stop" : 1652281933874,
+        "duration" : 18
+      }
+    } ]
+  },
+  "2edb527ff01f9d839a8dff55ac683ad6" : {
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 1,
+      "unknown" : 0,
+      "total" : 1
+    },
+    "items" : [ {
+      "uid" : "5bb98b31b4bd1f51",
+      "reportUrl" : "https://elastic.github.io/cloudbeat/471//#testresult/5bb98b31b4bd1f51",
+      "status" : "passed",
+      "time" : {
+        "start" : 1652281933944,
+        "stop" : 1652281933944,
+        "duration" : 0
+      }
+    } ]
+  },
+  "99f926694999c85ad22045fa4e553ee4" : {
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 1,
+      "unknown" : 0,
+      "total" : 1
+    },
+    "items" : [ {
+      "uid" : "413cf215f8f9ccc2",
+      "reportUrl" : "https://elastic.github.io/cloudbeat/471//#testresult/413cf215f8f9ccc2",
+      "status" : "passed",
+      "time" : {
+        "start" : 1652281932788,
+        "stop" : 1652281933769,
+        "duration" : 981
+      }
+    } ]
+  },
+  "3b2fce48ece491575a06d23ab8f2970e" : {
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 1,
+      "unknown" : 0,
+      "total" : 1
+    },
+    "items" : [ {
+      "uid" : "b85fa4612c7d273a",
+      "reportUrl" : "https://elastic.github.io/cloudbeat/471//#testresult/b85fa4612c7d273a",
+      "status" : "passed",
+      "time" : {
+        "start" : 1652281933993,
+        "stop" : 1652281933993,
+        "duration" : 0
+      }
+    } ]
+  }
+}
