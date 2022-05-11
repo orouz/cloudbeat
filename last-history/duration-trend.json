@@ -1,4 +1,9 @@
 [ {
+  "buildOrder" : 470,
+  "reportUrl" : "https://elastic.github.io/cloudbeat/470/",
+  "reportName" : "Allure Report with history",
+  "data" : { }
+}, {
   "buildOrder" : 469,
   "reportUrl" : "https://elastic.github.io/cloudbeat/469/",
   "reportName" : "Allure Report with history",
