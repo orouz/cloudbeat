@@ -1,0 +1,29 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Sun May 15 16:24:58 GMT 2022","Sun May 15 16:24:58 GMT 2022","57","integration.tests","test_output_to_elasticsearch","","","","test_elastic_index_exists[k8s_object]","
+    This test verifies that findings of all types are sending to elasticsearch
+    :param elastic_client: Elastic API client
+    :param match_type: Findings type for matching
+    :return:
+    "
+"passed","Sun May 15 16:24:58 GMT 2022","Sun May 15 16:24:58 GMT 2022","0","product.tests","test_cloudbeat","","","","test_cloudbeat_pods_running","
+    This test verifies that all pods are in status ""Running""
+    :param data: (Pods list, Nodes list)
+    :return:
+    "
+"passed","Sun May 15 16:24:57 GMT 2022","Sun May 15 16:24:58 GMT 2022","809","integration.tests","test_output_to_elasticsearch","","","","test_elastic_index_exists[file]","
+    This test verifies that findings of all types are sending to elasticsearch
+    :param elastic_client: Elastic API client
+    :param match_type: Findings type for matching
+    :return:
+    "
+"passed","Sun May 15 16:24:58 GMT 2022","Sun May 15 16:24:58 GMT 2022","0","product.tests","test_cloudbeat","","","","test_cloudbeat_pod_exist","
+    This test verifies that pods count is equal to nodes count
+    :param data: (Pods list, Nodes list)
+    :return:
+    "
+"passed","Sun May 15 16:24:58 GMT 2022","Sun May 15 16:24:58 GMT 2022","99","integration.tests","test_output_to_elasticsearch","","","","test_elastic_index_exists[process]","
+    This test verifies that findings of all types are sending to elasticsearch
+    :param elastic_client: Elastic API client
+    :param match_type: Findings type for matching
+    :return:
+    "
