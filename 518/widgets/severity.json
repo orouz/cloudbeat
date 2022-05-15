@@ -1,0 +1,51 @@
+[ {
+  "uid" : "510980e677c7675b",
+  "name" : "test_elastic_index_exists[file]",
+  "time" : {
+    "start" : 1652624302834,
+    "stop" : 1652624303640,
+    "duration" : 806
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "7f00d3e2a89d0bbf",
+  "name" : "test_elastic_index_exists[k8s_object]",
+  "time" : {
+    "start" : 1652624303738,
+    "stop" : 1652624303805,
+    "duration" : 67
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6585bf9b3229e36e",
+  "name" : "test_elastic_index_exists[process]",
+  "time" : {
+    "start" : 1652624303642,
+    "stop" : 1652624303713,
+    "duration" : 71
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "b777ee3b6fdac0e0",
+  "name" : "test_cloudbeat_pods_running",
+  "time" : {
+    "start" : 1652624303936,
+    "stop" : 1652624303936,
+    "duration" : 0
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "67d5ceddf75f91ac",
+  "name" : "test_cloudbeat_pod_exist",
+  "time" : {
+    "start" : 1652624303877,
+    "stop" : 1652624303877,
+    "duration" : 0
+  },
+  "status" : "passed",
+  "severity" : "normal"
+} ]
