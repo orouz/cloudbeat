@@ -1,0 +1,86 @@
+{
+  "uid" : "98d3104e051c652961429bf95fa0b5d6",
+  "children" : [ {
+    "name" : "integration.tests",
+    "children" : [ {
+      "name" : "test_output_to_elasticsearch",
+      "children" : [ {
+        "name" : "test_elastic_index_exists[file]",
+        "uid" : "d0f3451ec9a96f38",
+        "parentUid" : "f61f87afe05b0e039ce1031dd7893f14",
+        "status" : "passed",
+        "time" : {
+          "start" : 1652722048527,
+          "stop" : 1652722049593,
+          "duration" : 1066
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ "'file'" ]
+      }, {
+        "name" : "test_elastic_index_exists[process]",
+        "uid" : "25c3dd8aa0777e41",
+        "parentUid" : "f61f87afe05b0e039ce1031dd7893f14",
+        "status" : "passed",
+        "time" : {
+          "start" : 1652722049596,
+          "stop" : 1652722049637,
+          "duration" : 41
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ "'process'" ]
+      }, {
+        "name" : "test_elastic_index_exists[k8s_object]",
+        "uid" : "e7d3a896098288e8",
+        "parentUid" : "f61f87afe05b0e039ce1031dd7893f14",
+        "status" : "passed",
+        "time" : {
+          "start" : 1652722049653,
+          "stop" : 1652722049667,
+          "duration" : 14
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ "'k8s_object'" ]
+      } ],
+      "uid" : "f61f87afe05b0e039ce1031dd7893f14"
+    } ],
+    "uid" : "01e4d121d6bcfad4e04ed47177ddec52"
+  }, {
+    "name" : "product.tests",
+    "children" : [ {
+      "name" : "test_cloudbeat",
+      "children" : [ {
+        "name" : "test_cloudbeat_pod_exist",
+        "uid" : "cfa203663a8a4b7b",
+        "parentUid" : "b65f2876a623e238941ba27b86761eea",
+        "status" : "passed",
+        "time" : {
+          "start" : 1652722049732,
+          "stop" : 1652722049732,
+          "duration" : 0
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ ]
+      }, {
+        "name" : "test_cloudbeat_pods_running",
+        "uid" : "8bc5ff85356c2295",
+        "parentUid" : "b65f2876a623e238941ba27b86761eea",
+        "status" : "passed",
+        "time" : {
+          "start" : 1652722049781,
+          "stop" : 1652722049781,
+          "duration" : 0
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ ]
+      } ],
+      "uid" : "b65f2876a623e238941ba27b86761eea"
+    } ],
+    "uid" : "4624d9e9c900e43e9b1c1d2627d2b0ae"
+  } ],
+  "name" : "suites"
+}
