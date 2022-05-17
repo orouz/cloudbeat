@@ -1,0 +1,190 @@
+{
+    "@timestamp": "2022-05-17T10:15:16.491Z",
+    "agent": {
+        "ephemeral_id": "75481b80-7a73-4083-a507-88cb6f6f6bfe",
+        "id": "88fffd0d-66af-4b94-8e50-1325fcc7d509",
+        "name": "kind-mono-control-plane",
+        "type": "cloudbeat",
+        "version": "8.3.0"
+    },
+    "cloud": {
+        "account": {},
+        "instance": {
+            "id": "f9f3f8fd-a527-4f5e-a357-10fae3234ed8",
+            "name": "EUS2-GHEUS22UBT20EUS26-0164"
+        },
+        "machine": {
+            "type": "Standard_DS2_v2"
+        },
+        "provider": "azure",
+        "region": "eastus2",
+        "service": {
+            "name": "Virtual Machines"
+        }
+    },
+    "cluster_id": "103783f6-15de-45e6-84cb-51ff9d855dcf",
+    "cycle_id": "c97610b9-d9e4-41c6-8562-37233bd5a1cf",
+    "ecs": {
+        "version": "8.0.0"
+    },
+    "host": {
+        "architecture": "x86_64",
+        "containerized": true,
+        "hostname": "kind-mono-control-plane",
+        "ip": [
+            "10.244.0.1",
+            "10.244.0.1",
+            "10.244.0.1",
+            "10.244.0.1",
+            "172.18.0.2",
+            "fc00:f853:ccd:e793::2",
+            "fe80::42:acff:fe12:2"
+        ],
+        "mac": [
+            "02:42:ac:12:00:02",
+            "5a:1f:8f:11:83:b0",
+            "8e:f8:93:d4:f7:57",
+            "ca:70:b5:86:3a:54",
+            "fe:b1:12:fe:62:f9"
+        ],
+        "name": "kind-mono-control-plane",
+        "os": {
+            "codename": "bullseye",
+            "family": "debian",
+            "kernel": "5.13.0-1022-azure",
+            "name": "Debian GNU/Linux",
+            "platform": "debian",
+            "type": "linux",
+            "version": "11 (bullseye)"
+        }
+    },
+    "resource": {
+        "id": "833717c1-fc2b-52a0-b6e1-a72b2b91ce2b",
+        "name": "kubelet",
+        "raw": {
+            "command": "/usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --container-runtime=remote --container-runtime-endpoint=unix:///run/containerd/containerd.sock --fail-swap-on=false --node-ip=172.18.0.2 --node-labels= --pod-infra-container-image=k8s.gcr.io/pause:3.4.1 --provider-id=kind://docker/kind-mono/kind-mono-control-plane --fail-swap-on=false --cgroup-root=/kubelet",
+            "external_data": {
+                "config": {
+                    "apiVersion": "kubelet.config.k8s.io/v1beta1",
+                    "authentication": {
+                        "anonymous": {
+                            "enabled": false
+                        },
+                        "webhook": {
+                            "cacheTTL": "0s",
+                            "enabled": true
+                        },
+                        "x509": {
+                            "clientCAFile": "/etc/kubernetes/pki/ca.crt"
+                        }
+                    },
+                    "authorization": {
+                        "mode": "Webhook",
+                        "webhook": {
+                            "cacheAuthorizedTTL": "0s",
+                            "cacheUnauthorizedTTL": "0s"
+                        }
+                    },
+                    "cgroupDriver": "cgroupfs",
+                    "clusterDNS": [
+                        "10.96.0.10"
+                    ],
+                    "clusterDomain": "cluster.local",
+                    "cpuManagerReconcilePeriod": "0s",
+                    "evictionHard": {
+                        "imagefs.available": "0%",
+                        "nodefs.available": "0%",
+                        "nodefs.inodesFree": "0%"
+                    },
+                    "evictionPressureTransitionPeriod": "0s",
+                    "fileCheckFrequency": "0s",
+                    "healthzBindAddress": "127.0.0.1",
+                    "healthzPort": 10248,
+                    "httpCheckFrequency": "0s",
+                    "imageGCHighThresholdPercent": 100,
+                    "imageMinimumGCAge": "0s",
+                    "kind": "KubeletConfiguration",
+                    "logging": {},
+                    "nodeStatusReportFrequency": "0s",
+                    "nodeStatusUpdateFrequency": "0s",
+                    "rotateCertificates": true,
+                    "runtimeRequestTimeout": "0s",
+                    "shutdownGracePeriod": "0s",
+                    "shutdownGracePeriodCriticalPods": "0s",
+                    "staticPodPath": "/etc/kubernetes/manifests",
+                    "streamingConnectionIdleTimeout": "0s",
+                    "syncFrequency": "0s",
+                    "volumeStatsAggPeriod": "0s"
+                }
+            },
+            "pid": "710",
+            "stat": {
+                "EffectiveGID": "",
+                "EffectiveUID": "",
+                "Group": "710",
+                "Name": "kubelet",
+                "Nice": "0",
+                "Parent": "1",
+                "RealGID": "",
+                "RealUID": "",
+                "ResidentSize": "82812000",
+                "SavedGID": "",
+                "SavedUID": "",
+                "StartTime": "14026",
+                "State": "S",
+                "SystemTime": "549",
+                "Threads": "14",
+                "TotalSize": "1889464000",
+                "UserTime": "983"
+            }
+        },
+        "sub_type": "process",
+        "type": "process"
+    },
+    "resource_id": "833717c1-fc2b-52a0-b6e1-a72b2b91ce2b",
+    "result": {
+        "evaluation": "failed",
+        "evidence": {
+            "process_args": {
+                "--/usr/bin/kubelet": "",
+                "--bootstrap-kubeconfig": "/etc/kubernetes/bootstrap-kubelet.conf",
+                "--cgroup-root": "/kubelet",
+                "--config": "/var/lib/kubelet/config.yaml",
+                "--container-runtime": "remote",
+                "--container-runtime-endpoint": "unix:///run/containerd/containerd.sock",
+                "--fail-swap-on": "false",
+                "--kubeconfig": "/etc/kubernetes/kubelet.conf",
+                "--node-ip": "172.18.0.2",
+                "--node-labels": "",
+                "--pod-infra-container-image": "k8s.gcr.io/pause:3.4.1",
+                "--provider-id": "kind://docker/kind-mono/kind-mono-control-plane"
+            }
+        },
+        "expected": null
+    },
+    "rule": {
+        "audit": "Run the following command on each node:\n```\nps -ef | grep kubelet\n```\nVerify that the `--tls-cert-file` and `--tls-private-key-file` arguments exist and they are set as\nappropriate.\nIf these arguments are not present, check that there is a Kubelet config specified by `--config`\nand that it contains appropriate settings for tlsCertFile and tlsPrivateKeyFile.\n",
+        "benchmark": {
+            "name": "CIS Kubernetes V1.23",
+            "version": "v1.0.0"
+        },
+        "default_value": "",
+        "description": "Setup TLS connection on the Kubelets.\n",
+        "id": "dc91f4c4-4f0e-59ba-a0e1-96e996736787,",
+        "impact": "",
+        "name": "Ensure that the --tls-cert-file and --tls-private-key-file arguments are set as appropriate (Manual)",
+        "profile_applicability": "* Level 1 - Worker Node\n",
+        "rationale": "The connections from the apiserver to the kubelet are used for fetching logs for pods,\nattaching (through kubectl) to running pods, and using the kubelet\u2019s port-forwarding\nfunctionality. These connections terminate at the kubelet\u2019s HTTPS endpoint. By default, the\napiserver does not verify the kubelet\u2019s serving certificate, which makes the connection\nsubject to man-in-the-middle attacks, and unsafe to run over untrusted and/or public\nnetworks.\n",
+        "references": "",
+        "remediation": "If using a Kubelet config file, edit the file to set tlsCertFile to the location of the certificate\nfile to use to identify this Kubelet, and tlsPrivateKeyFile to the location of the\ncorresponding private key file.\nIf using command line arguments, edit the kubelet service file\n`/etc/systemd/system/kubelet.service.d/10-kubeadm.conf` on each worker node and set\nthe below parameters in KUBELET_CERTIFICATE_ARGS variable.\n--tls-cert-file=<path/to/tls-certificate-file> --tls-private-key-file=<path/to/tls-key-file>\nBased on your system, restart the kubelet service. For example:\n```\nsystemctl daemon-reload\nsystemctl restart kubelet.service\n```\n",
+        "section": "Kubelet",
+        "tags": [
+            "CIS",
+            "Kubernetes",
+            "CIS 4.2.10",
+            "Kubelet"
+        ],
+        "version": "1.0"
+    },
+    "type": "process"
+}
