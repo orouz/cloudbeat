@@ -1,0 +1,113 @@
+{
+    "@timestamp": "2022-05-18T15:11:08.678Z",
+    "agent": {
+        "ephemeral_id": "8cd52bef-0f07-4d90-a39b-34ce5d9fe8c6",
+        "id": "14e94e80-9870-462c-90f5-6f4ef162fa47",
+        "name": "kind-mono-control-plane",
+        "type": "cloudbeat",
+        "version": "8.3.0"
+    },
+    "cloud": {
+        "account": {},
+        "instance": {
+            "id": "e804afce-02c8-411f-ae33-5b2b47fd2d0e",
+            "name": "EUS-GHEUS23U20EUSC5-0431"
+        },
+        "machine": {
+            "type": "Standard_DS2_v2"
+        },
+        "provider": "azure",
+        "region": "eastus",
+        "service": {
+            "name": "Virtual Machines"
+        }
+    },
+    "cluster_id": "b7c70b24-920a-4857-98ef-fd9e7ed6f391",
+    "cycle_id": "2b9a886b-001d-47fd-8fad-51de1f78b575",
+    "ecs": {
+        "version": "8.0.0"
+    },
+    "host": {
+        "architecture": "x86_64",
+        "containerized": true,
+        "hostname": "kind-mono-control-plane",
+        "ip": [
+            "10.244.0.1",
+            "10.244.0.1",
+            "10.244.0.1",
+            "10.244.0.1",
+            "172.18.0.2",
+            "fc00:f853:ccd:e793::2",
+            "fe80::42:acff:fe12:2"
+        ],
+        "mac": [
+            "02:42:ac:12:00:02",
+            "46:0a:ed:61:6d:2c",
+            "4e:e4:94:3e:9b:93",
+            "a6:c8:8d:9e:c9:1e",
+            "b6:41:1e:a8:0e:88"
+        ],
+        "name": "kind-mono-control-plane",
+        "os": {
+            "codename": "bullseye",
+            "family": "debian",
+            "kernel": "5.13.0-1022-azure",
+            "name": "Debian GNU/Linux",
+            "platform": "debian",
+            "type": "linux",
+            "version": "11 (bullseye)"
+        }
+    },
+    "resource": {
+        "id": "f4c20104-8ea3-5e2e-a9d2-f20c66010dae",
+        "name": "/hostfs/etc/kubernetes/pki",
+        "raw": {
+            "filename": "pki",
+            "gid": "root",
+            "inode": "2591160",
+            "mode": "755",
+            "path": "/hostfs/etc/kubernetes/pki",
+            "sub_type": "directory",
+            "uid": "root"
+        },
+        "sub_type": "directory",
+        "type": "file"
+    },
+    "resource_id": "f4c20104-8ea3-5e2e-a9d2-f20c66010dae",
+    "result": {
+        "evaluation": "passed",
+        "evidence": {
+            "gid": "root",
+            "uid": "root"
+        },
+        "expected": {
+            "gid": "root",
+            "uid": "root"
+        }
+    },
+    "rule": {
+        "audit": "Run the below command (based on the file location on your system) on the\ncontrol plane node.\nFor example,\n```\nls -laR /etc/kubernetes/pki/\n```\nVerify that the ownership of all files and directories in this hierarchy is set to `root:root`.\n",
+        "benchmark": {
+            "name": "CIS Kubernetes V1.23",
+            "version": "v1.0.0"
+        },
+        "default_value": "By default, the `/etc/kubernetes/pki/` directory and all of the files and directories contained within it, are set to be owned by the root user.\n",
+        "description": "Ensure that the Kubernetes PKI directory and file ownership is set to `root:root`.\n",
+        "id": "780ac02f-e0f5-537c-98ba-354ae5873a81",
+        "impact": "None\n",
+        "name": "Ensure that the Kubernetes PKI directory and file ownership is set to root:root (Automated)",
+        "profile_applicability": "* Level 1 - Master Node\n",
+        "rationale": "Kubernetes makes use of a number of certificates as part of its operation. You should set the ownership of the directory containing the PKI information and all files in that directory to maintain their integrity. The directory and files should be owned by root:root.\n",
+        "references": "1. [https://kubernetes.io/docs/admin/kube-apiserver/](https://kubernetes.io/docs/admin/kube-apiserver/)\n",
+        "remediation": "Run the below command (based on the file location on your system) on the\ncontrol plane node.\nFor example,\n```\nchown -R root:root /etc/kubernetes/pki/\n```\n",
+        "section": "Control Plane Node Configuration Files",
+        "tags": [
+            "CIS",
+            "Kubernetes",
+            "CIS 1.1.19",
+            "Control Plane Node Configuration Files"
+        ],
+        "version": "1.0"
+    },
+    "type": "file"
+}
