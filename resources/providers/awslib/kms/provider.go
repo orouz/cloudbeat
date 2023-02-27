@@ -28,9 +28,8 @@ import (
 )
 
 type Provider struct {
-	log    *logp.Logger
-	client Client
-	// awsAccountID string
+	log     *logp.Logger
+	clients map[string]Client
 }
 
 type Client interface {
@@ -41,40 +40,42 @@ type Client interface {
 
 func (p Provider) DescribeKeys(ctx context.Context) ([]awslib.AwsResource, error) {
 
-	// TODO: multi region fetch
-	kms, err := p.client.ListKeys(ctx, &kmsClient.ListKeysInput{})
-	if err != nil {
-		return nil, err
-	}
-
 	var result []awslib.AwsResource
-	for _, keyEntry := range kms.Keys {
-		keyId := keyEntry.KeyId
-
-		keyInfo, err := p.client.DescribeKey(ctx, &kmsClient.DescribeKeyInput{
-			KeyId: keyId,
-		})
+	for _, client := range p.clients {
+		clientKeys, err := client.ListKeys(ctx, &kmsClient.ListKeysInput{})
 		if err != nil {
-			p.log.Errorf("Error describing KMS key %s %v", keyId, err.Error())
-			continue
+			p.log.Errorf("Could not list KMS keys: %v", err)
+			return nil, err
 		}
 
-		if keyInfo.KeyMetadata.KeySpec != types.KeySpecSymmetricDefault {
-			continue
-		}
+		for _, keyEntry := range clientKeys.Keys {
+			keyId := keyEntry.KeyId
 
-		rotationStatus, err := p.client.GetKeyRotationStatus(ctx, &kmsClient.GetKeyRotationStatusInput{
-			KeyId: keyId,
-		})
-		if err != nil {
-			p.log.Errorf("Error getting KMS key rotation status: %s %v", *keyInfo, err.Error())
-			continue
-		}
+			keyInfo, err := client.DescribeKey(ctx, &kmsClient.DescribeKeyInput{
+				KeyId: keyId,
+			})
+			if err != nil {
+				p.log.Errorf("Error describing KMS key %s %v", keyId, err.Error())
+				continue
+			}
 
-		result = append(result, KMSInfo{
-			KeyMetadata:        *keyInfo.KeyMetadata,
-			KeyRotationEnabled: &rotationStatus.KeyRotationEnabled,
-		})
+			if keyInfo.KeyMetadata.KeySpec != types.KeySpecSymmetricDefault {
+				continue
+			}
+
+			rotationStatus, err := client.GetKeyRotationStatus(ctx, &kmsClient.GetKeyRotationStatusInput{
+				KeyId: keyId,
+			})
+			if err != nil {
+				p.log.Errorf("Error getting KMS key rotation status: %s %v", *keyInfo, err.Error())
+				continue
+			}
+
+			result = append(result, KMSInfo{
+				KeyMetadata:        *keyInfo.KeyMetadata,
+				KeyRotationEnabled: &rotationStatus.KeyRotationEnabled,
+			})
+		}
 	}
 
 	return result, nil

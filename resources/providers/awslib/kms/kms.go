@@ -21,6 +21,7 @@ import (
 	"context"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/kms"
 	"github.com/aws/aws-sdk-go-v2/service/kms/types"
 	"github.com/elastic/cloudbeat/resources/providers/awslib"
@@ -41,12 +42,30 @@ type KMS interface {
 	DescribeKeys(ctx context.Context) ([]awslib.AwsResource, error)
 }
 
-func NewKMSProvider(log *logp.Logger, cfg aws.Config) *Provider {
+func NewKMSProvider(cfg aws.Config, log *logp.Logger, factory awslib.CrossRegionFactory[Client]) *Provider {
+	f := func(cfg aws.Config) Client {
+		return kms.NewFromConfig(cfg)
+	}
+	m := factory.NewMultiRegionClients(ec2.NewFromConfig(cfg), cfg, f, log)
 
-	// TODO: multi region clients
 	return &Provider{
-		log:    log,
-		client: kms.NewFromConfig(cfg),
-		// awsAccountID: awsAccountID,
+		log:     log,
+		clients: m.GetMultiRegionsClientMap(),
 	}
 }
+
+// func NewKMSProvider(log *logp.Logger, cfg aws.Config) *Provider {
+
+// 	// TODO: multi region clients
+// 	return &Provider{
+// 		log:    log,
+// 		client: kms.NewFromConfig(cfg),
+// 		// awsAccountID: awsAccountID,
+// 	}
+// 	// m := factory.NewMultiRegionClients(ec2.NewFromConfig(cfg), cfg, f, log)
+
+// 	// return &Provider{
+// 	// 	log:     log,
+// 	// 	clients: m.GetMultiRegionsClientMap(),
+// 	// }
+// }
