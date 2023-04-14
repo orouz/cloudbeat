@@ -44,6 +44,6 @@ func (s SecurityGroup) GetResourceName() string {
 	return *s.SecurityGroup.GroupName
 }
 
-func (s SecurityGroup) GetResourceType() string {
-	return fetching.SecurityGroupType
+func (s SecurityGroup) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsSecurityGroup
 }

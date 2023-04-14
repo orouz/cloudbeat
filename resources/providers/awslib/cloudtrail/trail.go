@@ -43,6 +43,6 @@ func (t TrailInfo) GetResourceName() string {
 	return *t.Trail.Name
 }
 
-func (t TrailInfo) GetResourceType() string {
-	return fetching.TrailType
+func (t TrailInfo) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsTrail
 }

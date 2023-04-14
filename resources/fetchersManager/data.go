@@ -113,7 +113,7 @@ func (d *Data) fetchIteration(ctx context.Context) {
 	wg := &sync.WaitGroup{}
 	for _, key := range d.fetchers.Keys() {
 		wg.Add(1)
-		go func(k string) {
+		go func(k fetching.FetcherType) {
 			defer wg.Done()
 			err := d.fetchSingle(ctx, k, fetching.CycleMetadata{Sequence: seq})
 			if err != nil {
@@ -127,7 +127,7 @@ func (d *Data) fetchIteration(ctx context.Context) {
 	d.log.Infof("Cycle %d resource fetching has ended", seq)
 }
 
-func (d *Data) fetchSingle(ctx context.Context, k string, cycleMetadata fetching.CycleMetadata) error {
+func (d *Data) fetchSingle(ctx context.Context, k fetching.FetcherType, cycleMetadata fetching.CycleMetadata) error {
 	if !d.fetchers.ShouldRun(k) {
 		return nil
 	}
@@ -152,7 +152,7 @@ func (d *Data) fetchSingle(ctx context.Context, k string, cycleMetadata fetching
 }
 
 // fetchProtected protect the fetching goroutine from getting panic
-func (d *Data) fetchProtected(ctx context.Context, k string, metadata fetching.CycleMetadata) (err error) {
+func (d *Data) fetchProtected(ctx context.Context, k fetching.FetcherType, metadata fetching.CycleMetadata) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("fetcher %s recovered from panic: %v", k, r)

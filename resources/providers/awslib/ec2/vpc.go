@@ -45,6 +45,6 @@ func (v VpcInfo) GetResourceName() string {
 	return *v.Vpc.VpcId
 }
 
-func (v VpcInfo) GetResourceType() string {
-	return fetching.VpcType
+func (v VpcInfo) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsVpc
 }

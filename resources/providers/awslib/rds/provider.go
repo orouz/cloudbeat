@@ -66,6 +66,6 @@ func (d DBInstance) GetResourceName() string {
 	return d.Identifier
 }
 
-func (d DBInstance) GetResourceType() string {
-	return fetching.RdsType
+func (d DBInstance) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsRds
 }

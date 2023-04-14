@@ -52,7 +52,7 @@ func New(options ...Option) DataProvider {
 	return kdp
 }
 
-func (k DataProvider) FetchData(resource string, id string) (types.Data, error) {
+func (k DataProvider) FetchData(resource fetching.ResourceType, id string) (types.Data, error) {
 	switch resource {
 	case fetchers.ProcessResourceType, fetchers.FSResourceType:
 		id = uuid.NewV5(uuidNamespace, k.clusterID+k.nodeID+id).String()

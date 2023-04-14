@@ -137,7 +137,7 @@ func (res EcrResource) GetMetadata() (fetching.ResourceMetadata, error) {
 	return fetching.ResourceMetadata{
 		ID:      *res.RepositoryArn,
 		Type:    fetching.CloudContainerRegistry,
-		SubType: fetching.EcrType,
+		SubType: fetching.AwsEcr,
 		Name:    *res.RepositoryName,
 	}, nil
 }

@@ -92,7 +92,7 @@ func (r MonitoringResource) GetMetadata() (fetching.ResourceMetadata, error) {
 	return fetching.ResourceMetadata{
 		ID:      id,
 		Type:    fetching.MonitoringIdentity,
-		SubType: fetching.MultiTrailsType,
+		SubType: fetching.AwsMultiTrails,
 		Name:    id,
 	}, nil
 }
@@ -107,7 +107,7 @@ func (s SecurityHubResource) GetMetadata() (fetching.ResourceMetadata, error) {
 		ID:      s.GetResourceArn(),
 		Name:    s.GetResourceName(),
 		Type:    fetching.MonitoringIdentity,
-		SubType: fetching.SecurityHubType,
+		SubType: fetching.AwsSecurityHub,
 	}, nil
 }
 

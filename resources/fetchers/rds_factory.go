@@ -31,7 +31,7 @@ import (
 )
 
 func init() {
-	fetchersManager.Factories.RegisterFactory(fetching.RdsType, &RdsFactory{
+	fetchersManager.Factories.RegisterFactory(fetching.RdsFetcher, &RdsFactory{
 		CrossRegionFactory: &awslib.MultiRegionClientFactory[rds.Client]{},
 	})
 }

@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	s3ControlTypes "github.com/aws/aws-sdk-go-v2/service/s3control/types"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -300,6 +301,6 @@ func (b BucketDescription) GetResourceName() string {
 	return b.Name
 }
 
-func (b BucketDescription) GetResourceType() string {
-	return fetching.S3Type
+func (b BucketDescription) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsS3
 }

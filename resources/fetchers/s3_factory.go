@@ -20,6 +20,7 @@ package fetchers
 import (
 	"context"
 	"fmt"
+
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/elastic/beats/v7/x-pack/libbeat/common/aws"
 	"github.com/elastic/cloudbeat/resources/providers/awslib"
@@ -32,7 +33,7 @@ import (
 )
 
 func init() {
-	fetchersManager.Factories.RegisterFactory(fetching.S3Type, &S3Factory{
+	fetchersManager.Factories.RegisterFactory(fetching.S3Fetcher, &S3Factory{
 		CrossRegionFactory: &awslib.MultiRegionClientFactory[s3.Client]{},
 		IdentityProvider:   awslib.GetIdentityClient,
 	})

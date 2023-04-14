@@ -21,6 +21,7 @@ import (
 	"errors"
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/elastic/cloudbeat/resources/fetching"
 )
 
 const DefaultRegion = "us-east-1"
@@ -34,7 +35,7 @@ type Config struct {
 type AwsResource interface {
 	GetResourceArn() string
 	GetResourceName() string
-	GetResourceType() string
+	GetResourceType() fetching.ResourceSubType
 }
 
 func GetClient[T any](region *string, list map[string]T) (T, error) {

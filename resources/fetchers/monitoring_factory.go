@@ -38,7 +38,7 @@ import (
 )
 
 func init() {
-	fetchersManager.Factories.RegisterFactory(fetching.MonitoringType, &MonitoringFactory{
+	fetchersManager.Factories.RegisterFactory(fetching.MonitoringFetcher, &MonitoringFactory{
 		AwsConfigProvider:                awslib.ConfigProvider{MetadataProvider: awslib.Ec2MetadataProvider{}},
 		TrailCrossRegionFactory:          &awslib.MultiRegionClientFactory[cloudtrail.Client]{},
 		CloudwatchCrossRegionFactory:     &awslib.MultiRegionClientFactory[cloudwatch.Client]{},

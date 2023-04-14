@@ -19,6 +19,7 @@ package logging
 
 import (
 	"context"
+
 	s3Client "github.com/aws/aws-sdk-go-v2/service/s3"
 
 	"github.com/elastic/cloudbeat/resources/fetching"
@@ -91,6 +92,6 @@ func (e EnrichedTrail) GetResourceName() string {
 	return *e.Trail.Name
 }
 
-func (e EnrichedTrail) GetResourceType() string {
-	return fetching.TrailType
+func (e EnrichedTrail) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsTrail
 }

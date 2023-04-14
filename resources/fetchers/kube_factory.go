@@ -18,13 +18,14 @@
 package fetchers
 
 import (
+	"sync"
+
 	"github.com/elastic/cloudbeat/resources/fetchersManager"
 	"github.com/elastic/cloudbeat/resources/fetching"
 	"github.com/elastic/elastic-agent-autodiscover/kubernetes"
 	"github.com/elastic/elastic-agent-libs/config"
 	"github.com/elastic/elastic-agent-libs/logp"
 	k8s "k8s.io/client-go/kubernetes"
-	"sync"
 )
 
 type KubeFactory struct {
@@ -33,7 +34,7 @@ type KubeFactory struct {
 type KubeClientProvider func(kubeconfig string, opt kubernetes.KubeClientOptions) (k8s.Interface, error)
 
 func init() {
-	fetchersManager.Factories.RegisterFactory(fetching.KubeAPIType, &KubeFactory{})
+	fetchersManager.Factories.RegisterFactory(fetching.KubeAPIFetcher, &KubeFactory{})
 }
 
 func (f *KubeFactory) Create(log *logp.Logger, c *config.C, ch chan fetching.ResourceInfo) (fetching.Fetcher, error) {

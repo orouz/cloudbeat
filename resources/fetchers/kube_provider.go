@@ -75,7 +75,7 @@ func (r K8sResource) GetMetadata() (fetching.ResourceMetadata, error) {
 	return fetching.ResourceMetadata{
 		ID:      string(resourceID),
 		Type:    K8sObjType,
-		SubType: getK8sSubType(r.log, k8sObj),
+		SubType: fetching.ResourceSubType(getK8sSubType(r.log, k8sObj)),
 		Name:    resourceName,
 	}, nil
 }

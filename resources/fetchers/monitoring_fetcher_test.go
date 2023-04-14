@@ -159,7 +159,7 @@ func TestMonitoringResource_GetMetadata(t *testing.T) {
 				ID:      "cloudtrail-aws-account-id",
 				Name:    "cloudtrail-aws-account-id",
 				Type:    fetching.MonitoringIdentity,
-				SubType: fetching.MultiTrailsType,
+				SubType: fetching.AwsMultiTrails,
 			},
 		},
 		{
@@ -177,7 +177,7 @@ func TestMonitoringResource_GetMetadata(t *testing.T) {
 				ID:      "cloudtrail-aws-account-id",
 				Name:    "cloudtrail-aws-account-id",
 				Type:    fetching.MonitoringIdentity,
-				SubType: fetching.MultiTrailsType,
+				SubType: fetching.AwsMultiTrails,
 			},
 		},
 	}
@@ -226,7 +226,7 @@ func TestSecurityHubResource_GetMetadata(t *testing.T) {
 				ID:      "hub:arn",
 				Name:    "securityhub-us-east-1-" + accountId,
 				Type:    fetching.MonitoringIdentity,
-				SubType: fetching.SecurityHubType,
+				SubType: fetching.AwsSecurityHub,
 			},
 		},
 		{
@@ -242,7 +242,7 @@ func TestSecurityHubResource_GetMetadata(t *testing.T) {
 				ID:      "securityhub-us-east-2-" + accountId,
 				Name:    "securityhub-us-east-2-" + accountId,
 				Type:    fetching.MonitoringIdentity,
-				SubType: fetching.SecurityHubType,
+				SubType: fetching.AwsSecurityHub,
 			},
 		},
 	}

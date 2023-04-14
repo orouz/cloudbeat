@@ -42,8 +42,8 @@ func (e EBSSnapshot) GetResourceName() string {
 	return fmt.Sprintf("ebs-snapshot-by-default-%s-%s", e.awsAccount, e.Region)
 }
 
-func (e EBSSnapshot) GetResourceType() string {
-	return fetching.EBSSnapshotType
+func (e EBSSnapshot) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsEbsSnapshot
 }
 
 func FromSnapshotInfo(snapshot types.SnapshotInfo, region string, awsAccount string) EBSSnapshot {

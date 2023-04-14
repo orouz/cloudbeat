@@ -20,8 +20,9 @@ package fetchers
 import (
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
 	"regexp"
+
+	"github.com/pkg/errors"
 
 	"github.com/elastic/cloudbeat/resources/fetching"
 	"github.com/elastic/cloudbeat/resources/providers/awslib"
@@ -112,7 +113,7 @@ func (r ElbResource) GetMetadata() (fetching.ResourceMetadata, error) {
 		// A compromise because aws-sdk do not return an arn for an Elb
 		ID:      fmt.Sprintf("%s-%s", *r.identity.Account, *r.lb.LoadBalancerName),
 		Type:    fetching.CloudLoadBalancer,
-		SubType: fetching.ElbType,
+		SubType: fetching.AwsElb,
 		Name:    *r.lb.LoadBalancerName,
 	}, nil
 }

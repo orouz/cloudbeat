@@ -21,6 +21,8 @@ package dataprovider
 
 import (
 	beat "github.com/elastic/beats/v7/libbeat/beat"
+	fetching "github.com/elastic/cloudbeat/resources/fetching"
+
 	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/elastic/cloudbeat/dataprovider/types"
@@ -82,21 +84,21 @@ func (_c *MockCommonDataProvider_EnrichEvent_Call) RunAndReturn(run func(*beat.E
 }
 
 // FetchData provides a mock function with given fields: resource, id
-func (_m *MockCommonDataProvider) FetchData(resource string, id string) (types.Data, error) {
+func (_m *MockCommonDataProvider) FetchData(resource fetching.ResourceType, id string) (types.Data, error) {
 	ret := _m.Called(resource, id)
 
 	var r0 types.Data
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string) (types.Data, error)); ok {
+	if rf, ok := ret.Get(0).(func(fetching.ResourceType, string) (types.Data, error)); ok {
 		return rf(resource, id)
 	}
-	if rf, ok := ret.Get(0).(func(string, string) types.Data); ok {
+	if rf, ok := ret.Get(0).(func(fetching.ResourceType, string) types.Data); ok {
 		r0 = rf(resource, id)
 	} else {
 		r0 = ret.Get(0).(types.Data)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+	if rf, ok := ret.Get(1).(func(fetching.ResourceType, string) error); ok {
 		r1 = rf(resource, id)
 	} else {
 		r1 = ret.Error(1)
@@ -111,15 +113,15 @@ type MockCommonDataProvider_FetchData_Call struct {
 }
 
 // FetchData is a helper method to define mock.On call
-//   - resource string
+//   - resource fetching.ResourceType
 //   - id string
 func (_e *MockCommonDataProvider_Expecter) FetchData(resource interface{}, id interface{}) *MockCommonDataProvider_FetchData_Call {
 	return &MockCommonDataProvider_FetchData_Call{Call: _e.mock.On("FetchData", resource, id)}
 }
 
-func (_c *MockCommonDataProvider_FetchData_Call) Run(run func(resource string, id string)) *MockCommonDataProvider_FetchData_Call {
+func (_c *MockCommonDataProvider_FetchData_Call) Run(run func(resource fetching.ResourceType, id string)) *MockCommonDataProvider_FetchData_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(string), args[1].(string))
+		run(args[0].(fetching.ResourceType), args[1].(string))
 	})
 	return _c
 }
@@ -129,7 +131,7 @@ func (_c *MockCommonDataProvider_FetchData_Call) Return(_a0 types.Data, _a1 erro
 	return _c
 }
 
-func (_c *MockCommonDataProvider_FetchData_Call) RunAndReturn(run func(string, string) (types.Data, error)) *MockCommonDataProvider_FetchData_Call {
+func (_c *MockCommonDataProvider_FetchData_Call) RunAndReturn(run func(fetching.ResourceType, string) (types.Data, error)) *MockCommonDataProvider_FetchData_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -25,42 +25,59 @@ import (
 	"github.com/elastic/elastic-agent-libs/logp"
 )
 
+type ResourceSubType string
+
 const (
-	KubeAPIType = "kube-api"
+	AwsEcr           ResourceSubType = "aws-ecr"
+	AwsEks           ResourceSubType = "aws-eks"
+	AwsElb           ResourceSubType = "aws-elb"
+	AwsKms           ResourceSubType = "aws-kms"
+	AwsEc2           ResourceSubType = "aws-ec2"
+	AwsEbsSnapshot   ResourceSubType = "aws-ebs-snapshot"
+	AwsConfigService ResourceSubType = "aws-config"
+	AwsVpc           ResourceSubType = "aws-vpc"
+	AwsRds           ResourceSubType = "aws-rds"
+	AwsEbs           ResourceSubType = "aws-ebs"
+	AwsS3            ResourceSubType = "aws-s3"
+	AwsSecurityHub   ResourceSubType = "aws-securityhub"
+	AwsNetworkNACL   ResourceSubType = "aws-nacl"
+	AwsTrail         ResourceSubType = "aws-trail"
+	AwsMultiTrails   ResourceSubType = "aws-multi-trails"
+	AwsSecurityGroup ResourceSubType = "aws-security-group"
+	AwsIAMUser       ResourceSubType = "aws-iam-user"
+	AwsPwdPolicy     ResourceSubType = "aws-password-policy"
+)
 
-	EcrType                   = "aws-ecr"
-	IAMType                   = "aws-iam"
-	EC2Type                   = "aws-ec2"
-	EC2NetworkingType         = "aws-ec2-network"
-	MonitoringType            = "aws-monitoring"
-	NetworkNACLType           = "aws-nacl"
-	TrailType                 = "aws-trail"
-	MultiTrailsType           = "aws-multi-trails"
-	SecurityGroupType         = "aws-security-group"
-	EBSType                   = "aws-ebs"
-	EBSSnapshotType           = "aws-ebs-snapshot"
-	ElbType                   = "aws-elb"
-	IAMUserType               = "aws-iam-user"
-	PwdPolicyType             = "aws-password-policy"
-	EksType                   = "aws-eks"
-	S3Type                    = "aws-s3"
-	KmsType                   = "aws-kms"
-	SecurityHubType           = "aws-securityhub"
-	VpcType                   = "aws-vpc"
-	RdsType                   = "aws-rds"
-	ConfigServiceResourceType = "aws-config"
+type ResourceType string
 
-	CloudIdentity          = "identity-management"
-	EC2Identity            = "cloud-compute"
-	MonitoringIdentity     = "monitoring"
-	CloudContainerMgmt     = "caas" // containers as a service
-	CloudLoadBalancer      = "load-balancer"
-	CloudContainerRegistry = "container-registry"
-	CloudStorage           = "cloud-storage"
-	CloudAudit             = "cloud-audit"
-	CloudDatabase          = "cloud-database"
-	CloudConfig            = "cloud-config"
-	KeyManagement          = "key-management"
+const (
+	CloudIdentity          ResourceType = "identity-management"
+	EC2Identity            ResourceType = "cloud-compute"
+	MonitoringIdentity     ResourceType = "monitoring"
+	CloudContainerMgmt     ResourceType = "caas" // containers as a service
+	CloudLoadBalancer      ResourceType = "load-balancer"
+	CloudContainerRegistry ResourceType = "container-registry"
+	CloudStorage           ResourceType = "cloud-storage"
+	CloudAudit             ResourceType = "cloud-audit"
+	CloudDatabase          ResourceType = "cloud-database"
+	CloudConfig            ResourceType = "cloud-config"
+	KeyManagement          ResourceType = "key-management"
+)
+
+type FetcherType string
+
+const (
+	IAMFetcher           FetcherType = "aws-iam"
+	KubeAPIFetcher       FetcherType = "kube-api"
+	EC2NetworkingFetcher FetcherType = "aws-ec2-network"
+	MonitoringFetcher    FetcherType = "aws-monitoring"
+	ElbFetcher           FetcherType = "aws-elb"
+	EcrFetcher           FetcherType = "aws-ecr"
+	EksFetcher           FetcherType = "aws-eks"
+	S3Fetcher            FetcherType = "aws-s3"
+	TrailFetcher         FetcherType = "aws-trail"
+	KmsFetcher           FetcherType = "aws-kms"
+	RdsFetcher           FetcherType = "aws-rds"
 )
 
 // Factory can create fetcher instances based on configuration
@@ -100,23 +117,23 @@ type ResourceFields struct {
 }
 
 type ResourceMetadata struct {
-	ID        string `json:"id"`
-	Type      string `json:"type"`
-	SubType   string `json:"sub_type,omitempty"`
-	Name      string `json:"name,omitempty"`
-	ECSFormat string `json:"ecsFormat,omitempty"`
+	ID        string          `json:"id"`
+	Type      ResourceType    `json:"type"`
+	SubType   ResourceSubType `json:"sub_type,omitempty"`
+	Name      string          `json:"name,omitempty"`
+	ECSFormat string          `json:"ecsFormat,omitempty"`
 }
 
 type Result struct {
-	Type     string      `json:"type"`
-	SubType  string      `json:"subType"`
-	Resource interface{} `json:"resource"`
+	Type     ResourceType    `json:"type"`
+	SubType  ResourceSubType `json:"subType"`
+	Resource interface{}     `json:"resource"`
 }
 
 type ResourceMap map[string][]Resource
 
 type BaseFetcherConfig struct {
-	Name string `config:"name"`
+	Name FetcherType `config:"name"`
 }
 
 type AwsBaseFetcherConfig struct {

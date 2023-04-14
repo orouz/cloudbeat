@@ -49,6 +49,6 @@ func (s SecurityHub) GetResourceName() string {
 	return fmt.Sprintf("securityhub-%s-%s", s.Region, s.AccountId)
 }
 
-func (s SecurityHub) GetResourceType() string {
-	return fetching.SecurityHubType
+func (s SecurityHub) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsSecurityHub
 }

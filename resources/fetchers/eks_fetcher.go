@@ -19,6 +19,7 @@ package fetchers
 
 import (
 	"context"
+
 	"github.com/pkg/errors"
 
 	"github.com/elastic/cloudbeat/resources/providers/awslib"
@@ -74,7 +75,7 @@ func (r EksResource) GetMetadata() (fetching.ResourceMetadata, error) {
 	return fetching.ResourceMetadata{
 		ID:      *r.Cluster.Arn,
 		Type:    fetching.CloudContainerMgmt,
-		SubType: fetching.EksType,
+		SubType: fetching.AwsEks,
 		Name:    *r.Cluster.Name,
 	}, nil
 }

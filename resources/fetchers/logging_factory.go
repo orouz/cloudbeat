@@ -20,6 +20,7 @@ package fetchers
 import (
 	"context"
 	"fmt"
+
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/elastic/beats/v7/x-pack/libbeat/common/aws"
 	"github.com/elastic/cloudbeat/resources/providers/aws_cis/logging"
@@ -36,7 +37,7 @@ import (
 )
 
 func init() {
-	fetchersManager.Factories.RegisterFactory(fetching.TrailType, &LoggingFactory{
+	fetchersManager.Factories.RegisterFactory(fetching.TrailFetcher, &LoggingFactory{
 		TrailCrossRegionFactory:  &awslib.MultiRegionClientFactory[cloudtrail.Client]{},
 		S3CrossRegionFactory:     &awslib.MultiRegionClientFactory[s3.Client]{},
 		ConfigCrossRegionFactory: &awslib.MultiRegionClientFactory[configservice.Client]{},

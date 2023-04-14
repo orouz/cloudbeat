@@ -77,6 +77,6 @@ func (c Config) GetResourceName() string {
 	return fmt.Sprintf("config-service-%s-%s", c.region, c.accountId)
 }
 
-func (c Config) GetResourceType() string {
-	return fetching.ConfigServiceResourceType
+func (c Config) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsConfigService
 }

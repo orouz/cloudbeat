@@ -45,6 +45,6 @@ func (r NACLInfo) GetResourceName() string {
 	return *r.NetworkAclId
 }
 
-func (r NACLInfo) GetResourceType() string {
-	return fetching.NetworkNACLType
+func (r NACLInfo) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsNetworkNACL
 }

@@ -37,6 +37,6 @@ func (e EBSEncryption) GetResourceName() string {
 	return fmt.Sprintf("ebs-encryption-by-default-%s-%s", e.awsAccount, e.region)
 }
 
-func (e EBSEncryption) GetResourceType() string {
-	return fetching.EBSType
+func (e EBSEncryption) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsEbs
 }

@@ -48,6 +48,6 @@ func (i Ec2Instance) GetResourceName() string {
 	return ""
 }
 
-func (i Ec2Instance) GetResourceType() string {
-	return fetching.EC2Type
+func (i Ec2Instance) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsEc2
 }

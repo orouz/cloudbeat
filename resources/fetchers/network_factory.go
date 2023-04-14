@@ -34,7 +34,7 @@ import (
 )
 
 func init() {
-	fetchersManager.Factories.RegisterFactory(fetching.EC2NetworkingType, &EC2NetworkFactory{
+	fetchersManager.Factories.RegisterFactory(fetching.EC2NetworkingFetcher, &EC2NetworkFactory{
 		CrossRegionFactory: &awslib.MultiRegionClientFactory[ec2.Client]{},
 		IdentityProvider:   awslib.GetIdentityClient,
 	})

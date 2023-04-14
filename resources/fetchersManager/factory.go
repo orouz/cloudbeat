@@ -29,19 +29,19 @@ import (
 var Factories = newFactories()
 
 type factories struct {
-	m map[string]fetching.Factory
+	m map[fetching.FetcherType]fetching.Factory
 }
 
 type ParsedFetcher struct {
-	name string
+	name fetching.FetcherType
 	f    fetching.Fetcher
 }
 
 func newFactories() factories {
-	return factories{m: make(map[string]fetching.Factory)}
+	return factories{m: make(map[fetching.FetcherType]fetching.Factory)}
 }
 
-func (fa *factories) RegisterFactory(name string, f fetching.Factory) {
+func (fa *factories) RegisterFactory(name fetching.FetcherType, f fetching.Factory) {
 	_, ok := fa.m[name]
 	if ok {
 		panic(fmt.Errorf("fetcher factory with name %q is already registered", name))
@@ -50,7 +50,7 @@ func (fa *factories) RegisterFactory(name string, f fetching.Factory) {
 	fa.m[name] = f
 }
 
-func (fa *factories) CreateFetcher(log *logp.Logger, name string, c *agentconfig.C, ch chan fetching.ResourceInfo) (fetching.Fetcher, error) {
+func (fa *factories) CreateFetcher(log *logp.Logger, name fetching.FetcherType, c *agentconfig.C, ch chan fetching.ResourceInfo) (fetching.Fetcher, error) {
 	factory, ok := fa.m[name]
 	if !ok {
 		return nil, fmt.Errorf("fetcher %s could not be found", name)

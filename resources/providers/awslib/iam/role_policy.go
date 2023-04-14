@@ -20,8 +20,10 @@ package iam
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
+	"github.com/elastic/cloudbeat/resources/fetching"
 )
 
 func (p Provider) GetIAMRolePermissions(ctx context.Context, roleName string) ([]RolePolicyInfo, error) {
@@ -73,6 +75,6 @@ func (r RolePolicyInfo) GetResourceName() string {
 	return ""
 }
 
-func (r RolePolicyInfo) GetResourceType() string {
+func (r RolePolicyInfo) GetResourceType() fetching.ResourceSubType {
 	return ""
 }

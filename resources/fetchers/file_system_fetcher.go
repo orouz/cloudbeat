@@ -20,16 +20,17 @@ package fetchers
 import (
 	"context"
 	"fmt"
-	"github.com/djherbis/times"
-	"github.com/elastic/cloudbeat/resources/fetching"
-	"github.com/elastic/cloudbeat/resources/utils/user"
-	"github.com/mitchellh/mapstructure"
-	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/djherbis/times"
+	"github.com/elastic/cloudbeat/resources/fetching"
+	"github.com/elastic/cloudbeat/resources/utils/user"
+	"github.com/mitchellh/mapstructure"
+	"github.com/pkg/errors"
 
 	"github.com/elastic/elastic-agent-libs/logp"
 )
@@ -184,10 +185,11 @@ func (r FSResource) GetElasticCommonData() any {
 }
 
 func (r FSResource) GetMetadata() (fetching.ResourceMetadata, error) {
+
 	return fetching.ResourceMetadata{
 		ID:        r.EvalResource.Path,
 		Type:      FSResourceType,
-		SubType:   r.EvalResource.SubType,
+		SubType:   fetching.ResourceSubType(r.EvalResource.SubType),
 		Name:      r.EvalResource.Path, // The Path from the container and not from the host
 		ECSFormat: FSResourceType,
 	}, nil

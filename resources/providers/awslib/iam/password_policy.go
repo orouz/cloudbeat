@@ -19,6 +19,7 @@ package iam
 
 import (
 	"context"
+
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/elastic/cloudbeat/resources/fetching"
 
@@ -67,6 +68,6 @@ func (p PasswordPolicy) GetResourceName() string {
 	return "account-password-policy"
 }
 
-func (p PasswordPolicy) GetResourceType() string {
-	return fetching.PwdPolicyType
+func (p PasswordPolicy) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsPwdPolicy
 }

@@ -25,6 +25,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/elastic/cloudbeat/resources/fetching"
 	"github.com/elastic/elastic-agent-libs/logp"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
@@ -166,7 +167,7 @@ func (t testAwsResource) GetResourceArn() string {
 
 func (t testAwsResource) GetResourceName() string { return "" }
 
-func (t testAwsResource) GetResourceType() string { return "" }
+func (t testAwsResource) GetResourceType() fetching.ResourceSubType { return "" }
 
 func (d dummyTester) DummyFunc() ([]AwsResource, error) {
 	awsRes := []AwsResource{testAwsResource{resRegion: d.region}}

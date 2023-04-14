@@ -34,7 +34,7 @@ import (
 )
 
 func init() {
-	fetchersManager.Factories.RegisterFactory(fetching.EcrType, &EcrFactory{
+	fetchersManager.Factories.RegisterFactory(fetching.EcrFetcher, &EcrFactory{
 		KubernetesProvider: providers.KubernetesProvider{},
 		IdentityProvider:   awslib.GetIdentityClient,
 		AwsConfigProvider:  awslib.ConfigProvider{MetadataProvider: awslib.Ec2MetadataProvider{}},

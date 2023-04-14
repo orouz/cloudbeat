@@ -20,6 +20,7 @@ package aws
 import (
 	"github.com/elastic/beats/v7/libbeat/beat"
 	"github.com/elastic/cloudbeat/dataprovider/types"
+	"github.com/elastic/cloudbeat/resources/fetching"
 	"github.com/elastic/cloudbeat/version"
 	"github.com/elastic/elastic-agent-libs/logp"
 )
@@ -45,7 +46,7 @@ func New(options ...Option) DataProvider {
 	return adp
 }
 
-func (a DataProvider) FetchData(_ string, id string) (types.Data, error) {
+func (a DataProvider) FetchData(_ fetching.ResourceType, id string) (types.Data, error) {
 	return types.Data{
 		ResourceID: id,
 		VersionInfo: version.CloudbeatVersionInfo{

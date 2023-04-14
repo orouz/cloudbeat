@@ -20,6 +20,7 @@ package fetchersManager
 import (
 	"context"
 	"fmt"
+
 	"github.com/elastic/cloudbeat/resources/conditions"
 	"github.com/elastic/cloudbeat/resources/fetching"
 	"github.com/elastic/cloudbeat/uniqueness"
@@ -27,17 +28,17 @@ import (
 )
 
 type FetchersRegistry interface {
-	Register(fetcherName string, f fetching.Fetcher, c ...fetching.Condition) error
-	Keys() []string
-	ShouldRun(key string) bool
-	Run(ctx context.Context, key string, metadata fetching.CycleMetadata) error
+	Register(fetcherName fetching.FetcherType, f fetching.Fetcher, c ...fetching.Condition) error
+	Keys() []fetching.FetcherType
+	ShouldRun(key fetching.FetcherType) bool
+	Run(ctx context.Context, key fetching.FetcherType, metadata fetching.CycleMetadata) error
 	Stop()
 	RegisterFetchers(fetchers []*ParsedFetcher, le uniqueness.Manager) error
 }
 
 type fetchersRegistry struct {
 	log *logp.Logger
-	reg map[string]registeredFetcher
+	reg map[fetching.FetcherType]registeredFetcher
 }
 
 type registeredFetcher struct {
@@ -48,7 +49,7 @@ type registeredFetcher struct {
 func NewFetcherRegistry(log *logp.Logger) FetchersRegistry {
 	reg := &fetchersRegistry{
 		log: log,
-		reg: make(map[string]registeredFetcher),
+		reg: make(map[fetching.FetcherType]registeredFetcher),
 	}
 	return reg
 }
@@ -71,7 +72,7 @@ func (r *fetchersRegistry) RegisterFetchers(fetchers []*ParsedFetcher, le unique
 }
 
 // Register registers a Fetcher implementation.
-func (r *fetchersRegistry) Register(fetcherName string, f fetching.Fetcher, c ...fetching.Condition) error {
+func (r *fetchersRegistry) Register(fetcherName fetching.FetcherType, f fetching.Fetcher, c ...fetching.Condition) error {
 	r.log.Infof("Registering new fetcher: %s", fetcherName)
 	if _, ok := r.reg[fetcherName]; ok {
 		return fmt.Errorf("fetcher %s is already registered", fetcherName)
@@ -85,8 +86,8 @@ func (r *fetchersRegistry) Register(fetcherName string, f fetching.Fetcher, c ..
 	return nil
 }
 
-func (r *fetchersRegistry) Keys() []string {
-	var keys []string
+func (r *fetchersRegistry) Keys() []fetching.FetcherType {
+	var keys []fetching.FetcherType
 	for k := range r.reg {
 		keys = append(keys, k)
 	}
@@ -94,7 +95,7 @@ func (r *fetchersRegistry) Keys() []string {
 	return keys
 }
 
-func (r *fetchersRegistry) ShouldRun(key string) bool {
+func (r *fetchersRegistry) ShouldRun(key fetching.FetcherType) bool {
 	registered, ok := r.reg[key]
 	if !ok {
 		return false
@@ -110,7 +111,7 @@ func (r *fetchersRegistry) ShouldRun(key string) bool {
 	return true
 }
 
-func (r *fetchersRegistry) Run(ctx context.Context, key string, metadata fetching.CycleMetadata) error {
+func (r *fetchersRegistry) Run(ctx context.Context, key fetching.FetcherType, metadata fetching.CycleMetadata) error {
 	registered, ok := r.reg[key]
 	if !ok {
 		return fmt.Errorf("fetcher %v not found", key)
@@ -127,10 +128,10 @@ func (r *fetchersRegistry) Stop() {
 }
 
 // TODO: Move conditions to factories and implement inside every factory
-func (r *fetchersRegistry) getConditions(name string, le uniqueness.Manager) ([]fetching.Condition, error) {
+func (r *fetchersRegistry) getConditions(name fetching.FetcherType, le uniqueness.Manager) ([]fetching.Condition, error) {
 	c := make([]fetching.Condition, 0)
 	switch name {
-	case fetching.KubeAPIType, fetching.EcrType, fetching.ElbType:
+	case fetching.KubeAPIFetcher, fetching.EcrFetcher, fetching.ElbFetcher:
 		// TODO: Use fetcher's kubeconfig configuration
 		c = append(c, conditions.NewLeaseFetcherCondition(r.log, le))
 	}

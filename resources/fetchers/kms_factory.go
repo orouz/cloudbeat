@@ -31,7 +31,7 @@ import (
 )
 
 func init() {
-	fetchersManager.Factories.RegisterFactory(fetching.KmsType, &KmsFactory{
+	fetchersManager.Factories.RegisterFactory(fetching.KmsFetcher, &KmsFactory{
 		CrossRegionFactory: &awslib.MultiRegionClientFactory[kms.Client]{},
 	})
 }

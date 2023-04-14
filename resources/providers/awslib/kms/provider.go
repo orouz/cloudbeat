@@ -104,6 +104,6 @@ func (k KmsInfo) GetResourceName() string {
 	return *k.KeyMetadata.KeyId
 }
 
-func (k KmsInfo) GetResourceType() string {
-	return fetching.KmsType
+func (k KmsInfo) GetResourceType() fetching.ResourceSubType {
+	return fetching.AwsKms
 }
