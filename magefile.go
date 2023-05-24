@@ -22,10 +22,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
-	"os/signal"
 	"path/filepath"
 	"strings"
 	"time"
@@ -36,9 +37,10 @@ import (
 	"github.com/elastic/beats/v7/dev-tools/mage"
 	devtools "github.com/elastic/beats/v7/dev-tools/mage"
 	cloudbeat "github.com/elastic/cloudbeat/scripts/mage"
-	"github.com/elastic/cloudbeat/version"
+	// "github.com/elastic/cloudbeat/version"
 	"github.com/elastic/e2e-testing/pkg/downloads"
-	"github.com/go-git/go-git/v5"
+	// "github.com/go-git/go-git/v5"
+	"github.com/google/go-github/v52/github"
 	// mage:import
 	_ "github.com/elastic/beats/v7/dev-tools/mage/target/pkg"
 	// mage:import
@@ -338,53 +340,114 @@ func PythonEnv() error {
 }
 
 func BuildOpaBundle() (err error) {
+	fmt.Println("SUpp")
+	log.Printf("sssss")
 	owner := "elastic"
 	repoName := "csp-security-policies"
 
-	// Override default SIGINT behaviour which does not allow deferred functions to be called
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	ctx := context.Background()
+	client := github.NewClient(nil)
 
-	cspPoliciesPkgDir, err := os.MkdirTemp("", repoName)
+	// Get the latest release
+	release, _, err := client.Repositories.GetLatestRelease(ctx, owner, repoName)
 	if err != nil {
-		return err
+		log.Fatalf("Failed to get latest release: %v", err)
 	}
 
-	defer func() {
-		rmErr := os.RemoveAll(cspPoliciesPkgDir)
-		if rmErr != nil && err == nil {
-			err = rmErr
-		}
-		signal.Stop(c)
-	}()
-
-	repo, err := git.PlainClone(cspPoliciesPkgDir, false, &git.CloneOptions{
-		URL: fmt.Sprintf("https://github.com/%s/%s.git", owner, repoName),
-	})
+	// Get the release assets
+	assets, _, err := client.Repositories.ListReleaseAssets(ctx, owner, repoName, release.GetID(), nil)
 	if err != nil {
-		return err
+		log.Fatalf("Failed to get release assets: %v", err)
+	}
+	fmt.Println("release", release)
+	fmt.Println("Assets", assets)
+
+	for _, asset := range assets {
+		// bundleUrl := asset.GetBrowserDownloadURL()
+		// log.Infof("Asset Name: %s, Download URL: %s\n", asset.GetName(), asset.GetBrowserDownloadURL())
+		fmt.Printf("Asset Name: %s, Download URL: %s\n", asset.GetName(), asset.GetBrowserDownloadURL())
+		// if bundleUrl.EndsWith("bundle.tar.gz") {
+		// 	downloadBundle(bundleUrl, "bundle.tar.gz")
+		// 	log.Infof("Downloaded bundle from %s", bundleUrl)
+		// }
 	}
 
-	// Find the commit associated with the relevant policy version tag
-	policyVersion := version.PolicyVersion().Version
-	ref, err := repo.Tag(policyVersion)
+	// https://api.github.com/repos/elastic/csp-security-policies/releases/latest
+
+	// // Override default SIGINT behaviour which does not allow deferred functions to be called
+	// c := make(chan os.Signal, 1)
+	// signal.Notify(c, os.Interrupt)
+
+	// cspPoliciesPkgDir, err := os.MkdirTemp("", repoName)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// defer func() {
+	// 	rmErr := os.RemoveAll(cspPoliciesPkgDir)
+	// 	if rmErr != nil && err == nil {
+	// 		err = rmErr
+	// 	}
+	// 	signal.Stop(c)
+	// }()
+
+	// repo, err := git.PlainClone(cspPoliciesPkgDir, false, &git.CloneOptions{
+	// 	URL: fmt.Sprintf("https://github.com/%s/%s.git", owner, repoName),
+	// })
+	// if err != nil {
+	// 	return err
+	// }
+
+	// // Find the commit associated with the relevant policy version tag
+	// policyVersion := version.PolicyVersion().Version
+	// ref, err := repo.Tag(policyVersion)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// log.Printf("Latest production release commit hash: %s", ref.Hash().String())
+	// // Check out the provided release tag commit
+	// wt, err := repo.Worktree()
+	// if err != nil {
+	// 	return err
+	// }
+
+	// if err = wt.Checkout(&git.CheckoutOptions{Hash: ref.Hash()}); err != nil {
+	// 	return err
+	// }
+
+	// if err = sh.Run("bin/opa", "build", "-b", cspPoliciesPkgDir+"/bundle", "-e", cspPoliciesPkgDir+"/bundle/compliance"); err != nil {
+	// 	return err
+	// }
+
+	return nil
+}
+
+// DownloadFile downloads a file from the specified URL and saves it to the specified output path.
+func downloadBundle(bundleUrl string, outputPath string) error {
+	// Create the output file
+	out, err := os.Create(outputPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create output file: %v", err)
 	}
+	defer out.Close()
 
-	log.Printf("Latest production release commit hash: %s", ref.Hash().String())
-	// Check out the provided release tag commit
-	wt, err := repo.Worktree()
+	// Send the HTTP GET request
+	resp, err := http.Get(bundleUrl)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to send HTTP request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response status code
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("received non-OK status code: %v", resp.StatusCode)
 	}
 
-	if err = wt.Checkout(&git.CheckoutOptions{Hash: ref.Hash()}); err != nil {
-		return err
-	}
-
-	if err = sh.Run("bin/opa", "build", "-b", cspPoliciesPkgDir+"/bundle", "-e", cspPoliciesPkgDir+"/bundle/compliance"); err != nil {
-		return err
+	// Copy the response body to the output file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to write file: %v", err)
 	}
 
 	return nil
