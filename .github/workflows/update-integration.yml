@@ -10,7 +10,7 @@ on:
 #       - "[0-9].[0-9]+"
 
 jobs:
-   extract-version:
+  extract-version:
     outputs:
       stack_version: ${{ steps.extract_version.outputs.version }}
     runs-on: ubuntu-latest
@@ -18,7 +18,6 @@ jobs:
     steps:
       - name: Checkout Cloudbeat repo
         uses: actions/checkout@v4
- 
 
       - name: Extract version from file
         id: extract_version
