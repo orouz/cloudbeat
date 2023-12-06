@@ -39,6 +39,7 @@ jobs:
 
       - name: Update URLs
         run: |
+          set -x
           new_version="${{ needs.extract-version.outputs.stack_version }}"
           echo "new_version is $new_version" 
 
