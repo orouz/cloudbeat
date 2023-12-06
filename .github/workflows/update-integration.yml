@@ -40,6 +40,9 @@ jobs:
 
       - name: Update URLs
         run: |
+          echo 'check for repo files'
+          ls 
+
           manifest_file_path="packages/cloud_security_posture/manifest.yml"
           new_version="${{ needs.extract-version.outputs.version }}"
 
