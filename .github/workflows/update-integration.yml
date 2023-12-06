@@ -40,32 +40,11 @@ jobs:
       - name: Update URLs
         run: |
           new_version="${{ needs.extract-version.outputs.stack_version }}"
-          echo "new_version is $new_version"
+          echo "new_version is $new_version" 
 
           manifest_file_path="packages/cloud_security_posture/manifest.yml"
           cat $manifest_file_path
-          rm -rf $manifest_file_path
-          cat $manifest_file_path
-        #   echo "check for package?"
-        #   ls packages/cloud_security_posture
 
-        #   new_cloudshell_git_branch=$(echo $new_version | cut -d '.' -f1,2)
-        #   echo "new_cloudshell_git_branch is $new_cloudshell_git_branch"
 
-        #   new_cloud_formation_template=$new_version
-        #   echo "new_cloud_formation_template is $new_cloud_formation_template"
 
-        #   sed -i '' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" ./packages/cloud_security_posture/manifest.yml
-        #   sed -i '' -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" ./packages/cloud_security_posture/manifest.yml
-
-    #   - name: Create Pull Request
-    #     run: |
-    #       gh pr create --base main --head "main" --title "[Cloud Security] Update manifest" --body "Your pull request description here" --author "Elastic Machine <elasticmachine@users.noreply.github.com>"
-
-    #   - uses: peter-evans/create-pull-request@v5
-    #     with:
-    #       # get ELASTIC_MACHINE_USER_PAT from somewhere
-    #       token: ${{ secrets.ELASTIC_MACHINE_USER_PAT }}
-    #       commit-message: Update manifest
-    #       committer: "Elastic Machine <elasticmachine@users.noreply.github.com>"
-    #       author: "Elastic Machine <elasticmachine@users.noreply.github.com>"
+          sed -i '' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_version/g" ./packages/cloud_security_posture/manifest.yml
