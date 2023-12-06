@@ -21,7 +21,7 @@ jobs:
         id: extract_version
         run: |
           version=$(grep defaultBeatVersion version/version.go | cut -f2 -d "\"")
-          echo "::set-output name=version::$version"
+          echo "version=$version" >> $GITHUB_OUTPUT
           echo "Version is $version"
 
   modify-integration:
@@ -32,9 +32,6 @@ jobs:
       - name: Checkout Integrations repo
         uses: actions/checkout@v4
         with:
-          # get ELASTIC_MACHINE_USER_PAT from somewhere
-          #   token: ${{ secrets.ELASTIC_MACHINE_USER_PAT }}
-          #   repository: elastic/integrations
           repository: orouz/integrations
           ref: main
 
@@ -44,7 +41,11 @@ jobs:
           ls 
 
           manifest_file_path="packages/cloud_security_posture/manifest.yml"
-          new_version="${{ needs.extract-version.outputs.version }}"
+          echo "manifest_file_path is $manifest_file_path"
+
+          ls packages/cloud_security_posture
+
+          new_version="${{ steps.extract-version.outputs.version }}"
 
           # example: 8.12
           new_cloudshell_git_branch=$(echo $new_version | cut -d '.' -f1,2) 
@@ -54,15 +55,15 @@ jobs:
           new_cloud_formation_template=$new_version
           echo "new_cloud_formation_template is $new_cloud_formation_template"
 
-          # update cloudshell_git_branch
-          sed -i '' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" $manifest_file_path
+        #   # update cloudshell_git_branch
+        #   sed -i '' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" $manifest_file_path
 
-          # update cloud_formation_template
-          sed -i '' -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" $manifest_file_path
+        #   # update cloud_formation_template
+        #   sed -i '' -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" $manifest_file_path
 
-      - name: Create Pull Request
-        run: |
-          gh pr create --base main --head "main" --title "[Cloud Security] Update manifest" --body "Your pull request description here" --author "Elastic Machine <elasticmachine@users.noreply.github.com>"
+    #   - name: Create Pull Request
+    #     run: |
+    #       gh pr create --base main --head "main" --title "[Cloud Security] Update manifest" --body "Your pull request description here" --author "Elastic Machine <elasticmachine@users.noreply.github.com>"
 
     #   - uses: peter-evans/create-pull-request@v5
     #     with:
