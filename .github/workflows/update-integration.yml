@@ -44,11 +44,15 @@ jobs:
 
           manifest_file_path="packages/cloud_security_posture/manifest.yml"
           echo "manifest_file_path is $manifest_file_path"
+          echo "here is manifst"
+          cat $manifest_file_path
+
 
           echo "check for package?"
           ls packages/cloud_security_posture
 
           new_version="${{ needs.steps.extract-version.outputs.stack_version }}"
+          echo "new_version is $new_version"
 
           new_cloudshell_git_branch=$(echo $new_version | cut -d '.' -f1,2)
           echo "new_cloudshell_git_branch is $new_cloudshell_git_branch"
