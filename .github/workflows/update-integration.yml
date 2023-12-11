@@ -27,7 +27,7 @@ jobs:
           echo "Version is $version"
 
   modify-integration:
-    # needs: extract-version
+    needs: extract-version
     runs-on: ubuntu-latest
 
     steps:
@@ -54,9 +54,11 @@ jobs:
           new_cloud_formation_template=$new_version
           echo "new_cloud_formation_template is $new_cloud_formation_template"
 
-          sed -i '' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" ./packages/cloud_security_posture/manifest.yml
-          sed -i '' -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" ./packages/cloud_security_posture/manifest.yml
-          git diff
+          cat manifest_file_path
+          echo foo > foo.txt
+          # sed -i '' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" $manifest_file_path
+          # sed -i '' -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" $manifest_file_path
+          # git diff
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
