@@ -40,15 +40,8 @@ jobs:
 
       - name: Update URLs
         run: |
-          echo 'check for repo files'
-          ls
-
           manifest_file_path="packages/cloud_security_posture/manifest.yml"
           echo "manifest_file_path is $manifest_file_path"
-
-          if test -f $manifest_file_path; then
-            echo "file exists"
-          fi
 
           new_version="${{ needs.extract-version.outputs.stack_version }}"
           echo "new_version is $new_version"
@@ -59,9 +52,8 @@ jobs:
           new_cloud_formation_template=$new_version
           echo "new_cloud_formation_template is $new_cloud_formation_template"
 
-
-          sed -i '' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" $manifest_file_path
-          sed -i '' -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" $manifest_file_path
+          sed -i -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" $manifest_file_path
+          sed -i -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" $manifest_file_path
           git diff
 
       - name: Create Pull Request
