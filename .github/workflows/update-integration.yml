@@ -61,10 +61,10 @@ jobs:
         id: cpr
         with:
           token: ${{ secrets.FORK_TOKEN }}
-          commit-message: ${{ env.commit_message }}
+          commit-message: "Update manifest template versions"
           branch: "update-cloudbeat-integration"
-          title: ${{ env.commit_message }}
-          body: ${{ env.commit_message }}
+          title: "[Cloud Security] Update manifest template versions"
+          body: "Automated PR"
           base: ${{ env.branch }}
           committer: "Elastic Machine <elasticmachine@users.noreply.github.com>"
           author: "Elastic Machine <elasticmachine@users.noreply.github.com>"
