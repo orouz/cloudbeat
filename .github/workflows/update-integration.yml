@@ -32,7 +32,7 @@ jobs:
       - name: Bump cloudbeat version
         run: |
           echo "set version ${{github.event.inputs.version}}"
-          sed -i'' -E "s/const defaultBeatVersion = .*/defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
+          sed -i'' -E "s/const defaultBeatVersion = .*/const defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
           git diff
 
       - name: Create Pull Request
@@ -62,9 +62,7 @@ jobs:
       - name: Update URLs
         run: |
           MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
-
-          # VERSION="${{ needs.cloudbeat.outputs.stack_version }}"
-          VERSION="5.5.5"
+          VERSION="${{ needs.cloudbeat.outputs.stack_version }}"
 
           MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
           echo "MINOR_VERSION is $MINOR_VERSION"
