@@ -53,8 +53,11 @@ jobs:
           echo "new_cloud_formation_template is $new_cloud_formation_template"
 
           sed -i -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" $manifest_file_path
-          sed -i -E "s/(cloudformation-cnvm-)[0-9]+\.[0-9]+\.[0-9]+/\1$new_cloud_formation_template/g" $manifest_file_path
-          sed -i -E "s/(cloudformation-cspm-ACCOUNT_TYPE-)[0-9]+\.[0-9]+\.[0-9]+/\1$new_cloud_formation_template/g" $manifest_file_path
+          sed -i -E "s/cloudformation-cnvm-[0-9]+\.[0-9]+\.[0-9]+/\cloudformation-cnvm-$new_cloud_formation_template/g" $manifest_file_path
+          sed -i -E "s/cloudformation-cspm-ACCOUNT_TYPE-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cspm-ACCOUNT_TYPE-$new_cloud_formation_template/g" $manifest_file_path
+
+          # sed -i -E "s/(cloudformation-cnvm-)[0-9]+\.[0-9]+\.[0-9]+/\1$new_cloud_formation_template/g" $manifest_file_path
+          # sed -i -E "s/(cloudformation-cspm-ACCOUNT_TYPE-)[0-9]+\.[0-9]+\.[0-9]+/\1$new_cloud_formation_template/g" $manifest_file_path
 
           # cloudbeat%2Fmain
           git diff
