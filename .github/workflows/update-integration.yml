@@ -24,12 +24,14 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
           # branch out
           MINOR_VERSION=$(echo $version | cut -d '.' -f1,2)
+          echo "Creating branch $MINOR_VERSION"
           git checkout -b $MINOR_VERSION
           git push origin $MINOR_VERSION
           git checkout main
 
       - name: Bump cloudbeat version
         run: |
+          echo "set version ${{github.event.inputs.version}}"
           sed -i'' -E "s/const defaultBeatVersion = .*/defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
           git diff
 
