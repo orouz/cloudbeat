@@ -27,6 +27,8 @@ jobs:
     needs: extract-version
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Cloudbeat repo
+        uses: actions/checkout@v4
       - name: Create Release branch
         run: |
           # branch out
@@ -34,10 +36,12 @@ jobs:
           MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
           git checkout -b $MINOR_VERSION
           git push origin $MINOR_VERSION
+
       - name: Bump cloudbeat version
         run: |
 
           sed -i'' -E "s/defaultBeatVersion = \"[0-9]+\.[0-9]+\"/defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
+          git diff
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
