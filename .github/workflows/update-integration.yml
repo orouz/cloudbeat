@@ -47,22 +47,21 @@ jobs:
           new_version="5.5.5"
           echo "new_version is $new_version"
 
-          CLOUDBEAT_BRANCH=$(echo $new_version | cut -d '.' -f1,2)
-          echo "CLOUDBEAT_BRANCH is $CLOUDBEAT_BRANCH"
+          MINOR_VERSION=$(echo $new_version | cut -d '.' -f1,2)
+          echo "MINOR_VERSION is $MINOR_VERSION"
 
-          TEMPLATE_VERSION=$new_version
-          echo "TEMPLATE_VERSION is $TEMPLATE_VERSION"
-          cat $manifest_file_path
+          PATCH_VERSION=$new_version
+          echo "PATCH_VERSION is $PATCH_VERSION"
 
-          sed -i'' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$CLOUDBEAT_BRANCH/g" $manifest_file_path
-          sed -i'' -E "s/cloudformation-cnvm-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cnvm-$TEMPLATE_VERSION/g" $manifest_file_path
-          sed -i'' -E "s/cloudformation-cspm-ACCOUNT_TYPE-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cspm-ACCOUNT_TYPE-$TEMPLATE_VERSION/g" $manifest_file_path
+          # gcp
+          sed -i'' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$MINOR_VERSION/g" $manifest_file_path
 
-          # sed -i -E "s/(cloudformation-cnvm-)[0-9]+\.[0-9]+\.[0-9]+/\1$TEMPLATE_VERSION/g" $manifest_file_path
-          # sed -i -E "s/(cloudformation-cspm-ACCOUNT_TYPE-)[0-9]+\.[0-9]+\.[0-9]+/\1$TEMPLATE_VERSION/g" $manifest_file_path
+          # aws
+          sed -i'' -E "s/cloudformation-cnvm-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cnvm-$PATCH_VERSION/g" $manifest_file_path
+          sed -i'' -E "s/cloudformation-cspm-ACCOUNT_TYPE-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cspm-ACCOUNT_TYPE-$PATCH_VERSION/g" $manifest_file_path
 
-          # cloudbeat%2Fmain
-          git diff
+          # azure
+          sed -i'' -E "s/cloudbeat%2-[0-9]+\.[0-9]+\.[0-9]+/cloudbeat%2-$PATCH_VERSION/g" $manifest_file_path
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
