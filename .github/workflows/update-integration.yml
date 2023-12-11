@@ -27,7 +27,7 @@ jobs:
       - name: Create Release branch
         run: |
           # branch out
-          VERSION="${{ needs.extract-version.outputs.stack_version }}"
+          VERSION="${{ needs.cloudbeat.outputs.stack_version }}"
           MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
           git checkout -b $MINOR_VERSION
           git push origin $MINOR_VERSION
