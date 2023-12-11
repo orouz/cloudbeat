@@ -61,6 +61,11 @@ jobs:
 
       #     sed -i '' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$new_cloudshell_git_branch/g" ./packages/cloud_security_posture/manifest.yml
       #     sed -i '' -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" ./packages/cloud_security_posture/manifest.yml
+      - name: foo
+        run: |
+          echo foo > foo.txt
+          echo "commit_message=Bumps ${{ github.event.inputs.branch }} to ${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          echo "branch_name=bump_${{ github.event.inputs.branch }}_to_${{ github.event.inputs.version }}" >> $GITHUB_ENV
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
