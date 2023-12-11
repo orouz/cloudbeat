@@ -26,10 +26,10 @@ jobs:
           MINOR_VERSION=$(echo $version | cut -d '.' -f1,2)
           git checkout -b $MINOR_VERSION
           git push origin $MINOR_VERSION
+          git checkout main
 
       - name: Bump cloudbeat version
         run: |
-          git checkout main
           sed -i'' -E "s/defaultBeatVersion = \"[0-9]+\.[0-9]+\"/defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
           git diff
 
