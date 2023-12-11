@@ -63,15 +63,16 @@ jobs:
       #     sed -i '' -E "s/cloud_formation_template=[0-9]+\.[0-9]+/cloud_formation_template=$new_cloud_formation_template/g" ./packages/cloud_security_posture/manifest.yml
       - name: foo
         run: |
-          echo fozo > foo.txt
-          echo "commit_message=Bumps ${{ github.event.inputs.branch }} to ${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          echo "branch_name=bump_${{ github.event.inputs.branch }}_to_${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          echo fozzo > foo.txt
+          echo "commit_message=foo" >> $GITHUB_ENV
+          echo "branch_name=fooz" >> $GITHUB_ENV
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         id: cpr
         with:
-          token: ${{ secrets.FORK_TOKEN }}
+          # token: ${{ secrets.FORK_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: ${{ env.commit_message }}
           branch: ${{ env.branch_name }}
           title: ${{ env.commit_message }}
