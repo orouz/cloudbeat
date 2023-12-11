@@ -67,6 +67,6 @@ jobs:
           echo foo > foo.txt
           git add .
           git commit -m "Update foo"
-          git config --local user.name 'Elastic Machine'
-          git config --local user.email 'elasticmachine@users.noreply.github.com'
+          git config --global user.name 'Elastic Machine'
+          git config --global user.email 'elasticmachine@users.noreply.github.com'
           gh pr create --base main --head "main" --title "[Cloud Security] Update manifest" --body "Your pull request description here" --author "Elastic Machine <elasticmachine@users.noreply.github.com>"
