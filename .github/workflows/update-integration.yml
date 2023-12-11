@@ -1,13 +1,12 @@
 name: Update Integration
 
 on:
-  push:
+  # push:
+  #   branches:
+  #     - main
+  create:
     branches:
-      - main
-#   create:
-#     branches:
-#       # whenever a new release branch is created, this workflow will be triggered
-#       - "[0-9].[0-9]+"
+      - "[0-9]+.[0-9]+"
 
 jobs:
   # extract-version:
@@ -26,52 +25,57 @@ jobs:
   #         echo "version=$version" >> $GITHUB_OUTPUT
   #         echo "Version is $version"
 
-  modify-integration:
-    # needs: extract-version
+  zoo:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Integrations repo
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.FORK_TOKEN }}
-          repository: orouz/integrations
-          ref: main
-
-      - name: Update URLs
+      - name: a
         run: |
-          manifest_file_path="packages/cloud_security_posture/manifest.yml"
-          echo "manifest_file_path is $manifest_file_path"
+          echo "branch name: ${{ github.head_ref || github.ref_name }}"
 
-          # new_version="${{ needs.extract-version.outputs.stack_version }}"
-          new_version="5.5.5"
-          echo "new_version is $new_version"
+  # modify-integration:
+  #   # needs: extract-version
+  #   runs-on: ubuntu-latest
 
-          MINOR_VERSION=$(echo $new_version | cut -d '.' -f1,2)
-          echo "MINOR_VERSION is $MINOR_VERSION"
+  #   steps:
+  #     - name: Checkout Integrations repo
+  #       uses: actions/checkout@v2
+  #       with:
+  #         token: ${{ secrets.FORK_TOKEN }}
+  #         repository: orouz/integrations
+  #         ref: main
 
-          PATCH_VERSION=$new_version
-          echo "PATCH_VERSION is $PATCH_VERSION"
+  #     - name: Update URLs
+  #       run: |
+  #         MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
 
-          # gcp
-          sed -i'' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$MINOR_VERSION/g" $manifest_file_path
+  #         # VERSION="${{ needs.extract-version.outputs.stack_version }}"
+  #         VERSION="5.5.5"
 
-          # aws
-          sed -i'' -E "s/cloudformation-cnvm-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cnvm-$PATCH_VERSION/g" $manifest_file_path
-          sed -i'' -E "s/cloudformation-cspm-ACCOUNT_TYPE-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cspm-ACCOUNT_TYPE-$PATCH_VERSION/g" $manifest_file_path
+  #         MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
+  #         echo "MINOR_VERSION is $MINOR_VERSION"
 
-          # azure
-          sed -i'' -E "s/cloudbeat%2F[0-9]+\.[0-9]+/cloudbeat%2F$PATCH_VERSION/g" $manifest_file_path
+  #         PATCH_VERSION=$VERSION
+  #         echo "PATCH_VERSION is $PATCH_VERSION"
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
-        id: cpr
-        with:
-          token: ${{ secrets.FORK_TOKEN }}
-          commit-message: "Update manifest template versions"
-          branch: "update-cloudbeat-integration"
-          title: "[Cloud Security] Update manifest template versions"
-          body: "Automated PR"
-          base: ${{ env.branch }}
-          committer: "Elastic Machine <elasticmachine@users.noreply.github.com>"
-          author: "Elastic Machine <elasticmachine@users.noreply.github.com>"
+  #         # cis_gcp
+  #         sed -i'' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$MINOR_VERSION/g" $MANIFEST_PATH
+
+  #         # cis_aws + vuln_mgmt_aws
+  #         sed -i'' -E "s/cloudformation-cnvm-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cnvm-$PATCH_VERSION/g" $MANIFEST_PATH
+  #         sed -i'' -E "s/cloudformation-cspm-ACCOUNT_TYPE-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cspm-ACCOUNT_TYPE-$PATCH_VERSION/g" $MANIFEST_PATH
+
+  #         # cis_azure
+  #         sed -i'' -E "s/cloudbeat%2F[0-9]+\.[0-9]+/cloudbeat%2F$PATCH_VERSION/g" $MANIFEST_PATH
+
+  #     - name: Create Pull Request
+  #       uses: peter-evans/create-pull-request@v4
+  #       id: cpr
+  #       with:
+  #         token: ${{ secrets.FORK_TOKEN }}
+  #         commit-message: "Update manifest template versions"
+  #         branch: "update-cloudbeat-integration"
+  #         title: "[Cloud Security] Update manifest template versions"
+  #         body: "Automated PR"
+  #         base: ${{ env.branch }}
+  #         committer: "Elastic Machine <elasticmachine@users.noreply.github.com>"
+  #         author: "Elastic Machine <elasticmachine@users.noreply.github.com>"
