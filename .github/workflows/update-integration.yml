@@ -1,81 +1,99 @@
-name: Update Integration
+name: Bump Cloudbeat version
 
 on:
-  # push:
-  #   branches:
-  #     - main
-  create:
-    branches:
-      - "[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The new version number to bump to"
+        required: true
 
 jobs:
-  # extract-version:
-  #   outputs:
-  #     stack_version: ${{ steps.extract_version.outputs.version }}
-  #   runs-on: ubuntu-latest
+  extract-version:
+    outputs:
+      stack_version: ${{ steps.extract_version.outputs.version }}
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout Cloudbeat repo
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout Cloudbeat repo
+        uses: actions/checkout@v4
 
-  #     - name: Extract version from file
-  #       id: extract_version
-  #       run: |
-  #         version=$(grep defaultBeatVersion version/version.go | cut -f2 -d "\"")
-  #         echo "version=$version" >> $GITHUB_OUTPUT
-  #         echo "Version is $version"
-
-  zoo:
+      - name: Extract version from file
+        id: extract_version
+        run: |
+          version=$(grep defaultBeatVersion version/version.go | cut -f2 -d "\"")
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Version is $version"
+  cloudbeat:
+    needs: extract-version
     runs-on: ubuntu-latest
     steps:
-      - name: a
+      - name: Create Release branch
         run: |
-          echo "branch name: ${{ github.head_ref || github.ref_name }}"
+          # branch out
+          VERSION="${{ needs.extract-version.outputs.stack_version }}"
+          MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
+          git checkout -b $MINOR_VERSION
+          git push origin $MINOR_VERSION
+      - name: Bump cloudbeat version
+        run: |
 
-  # modify-integration:
-  #   # needs: extract-version
-  #   runs-on: ubuntu-latest
+          sed -i'' -E "s/defaultBeatVersion = \"[0-9]+\.[0-9]+\"/defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          # token: ${{ secrets.FORK_TOKEN }}
+          commit-message: "Update Cloudbeat versions"
+          branch: "update-cloudbeat-bersion"
+          title: "Bump Cloudbeat"
+          body: "Automated PR"
+          base: ${{ env.branch }}
+          committer: "Elastic Machine <elasticmachine@users.noreply.github.com>"
+          author: "Elastic Machine <elasticmachine@users.noreply.github.com>"
 
-  #   steps:
-  #     - name: Checkout Integrations repo
-  #       uses: actions/checkout@v2
-  #       with:
-  #         token: ${{ secrets.FORK_TOKEN }}
-  #         repository: orouz/integrations
-  #         ref: main
+  integration:
+    needs: extract-version
+    runs-on: ubuntu-latest
 
-  #     - name: Update URLs
-  #       run: |
-  #         MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
+    steps:
+      - name: Checkout Integrations repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.FORK_TOKEN }}
+          repository: orouz/integrations
+          ref: main
 
-  #         # VERSION="${{ needs.extract-version.outputs.stack_version }}"
-  #         VERSION="5.5.5"
+      - name: Update URLs
+        run: |
+          MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
 
-  #         MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
-  #         echo "MINOR_VERSION is $MINOR_VERSION"
+          # VERSION="${{ needs.extract-version.outputs.stack_version }}"
+          VERSION="5.5.5"
 
-  #         PATCH_VERSION=$VERSION
-  #         echo "PATCH_VERSION is $PATCH_VERSION"
+          MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
+          echo "MINOR_VERSION is $MINOR_VERSION"
 
-  #         # cis_gcp
-  #         sed -i'' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$MINOR_VERSION/g" $MANIFEST_PATH
+          PATCH_VERSION=$VERSION
+          echo "PATCH_VERSION is $PATCH_VERSION"
 
-  #         # cis_aws + vuln_mgmt_aws
-  #         sed -i'' -E "s/cloudformation-cnvm-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cnvm-$PATCH_VERSION/g" $MANIFEST_PATH
-  #         sed -i'' -E "s/cloudformation-cspm-ACCOUNT_TYPE-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cspm-ACCOUNT_TYPE-$PATCH_VERSION/g" $MANIFEST_PATH
+          # cis_gcp
+          sed -i'' -E "s/cloudshell_git_branch=[0-9]+\.[0-9]+/cloudshell_git_branch=$MINOR_VERSION/g" $MANIFEST_PATH
 
-  #         # cis_azure
-  #         sed -i'' -E "s/cloudbeat%2F[0-9]+\.[0-9]+/cloudbeat%2F$PATCH_VERSION/g" $MANIFEST_PATH
+          # cis_aws + vuln_mgmt_aws
+          sed -i'' -E "s/cloudformation-cnvm-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cnvm-$PATCH_VERSION/g" $MANIFEST_PATH
+          sed -i'' -E "s/cloudformation-cspm-ACCOUNT_TYPE-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cspm-ACCOUNT_TYPE-$PATCH_VERSION/g" $MANIFEST_PATH
 
-  #     - name: Create Pull Request
-  #       uses: peter-evans/create-pull-request@v4
-  #       id: cpr
-  #       with:
-  #         token: ${{ secrets.FORK_TOKEN }}
-  #         commit-message: "Update manifest template versions"
-  #         branch: "update-cloudbeat-integration"
-  #         title: "[Cloud Security] Update manifest template versions"
-  #         body: "Automated PR"
-  #         base: ${{ env.branch }}
-  #         committer: "Elastic Machine <elasticmachine@users.noreply.github.com>"
-  #         author: "Elastic Machine <elasticmachine@users.noreply.github.com>"
+          # cis_azure
+          sed -i'' -E "s/cloudbeat%2F[0-9]+\.[0-9]+/cloudbeat%2F$PATCH_VERSION/g" $MANIFEST_PATH
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        id: cpr
+        with:
+          token: ${{ secrets.FORK_TOKEN }}
+          commit-message: "Update manifest template versions"
+          branch: "update-cloudbeat-integration"
+          title: "[Cloud Security] Update manifest template versions"
+          body: "Automated PR"
+          base: ${{ env.branch }}
+          committer: "Elastic Machine <elasticmachine@users.noreply.github.com>"
+          author: "Elastic Machine <elasticmachine@users.noreply.github.com>"
