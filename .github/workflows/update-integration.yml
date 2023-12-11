@@ -22,13 +22,8 @@ jobs:
         run: |
           version=$(grep defaultBeatVersion version/version.go | cut -f2 -d "\"")
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "Version is $version"
-
-      - name: Create Release branch
-        run: |
           # branch out
-          VERSION="${{ needs.cloudbeat.outputs.stack_version }}"
-          MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
+          MINOR_VERSION=$(echo $version | cut -d '.' -f1,2)
           git checkout -b $MINOR_VERSION
           git push origin $MINOR_VERSION
 
