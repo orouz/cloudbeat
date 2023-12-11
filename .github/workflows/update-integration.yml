@@ -8,7 +8,7 @@ on:
         required: true
 
 jobs:
-  extract-version:
+  cloudbeat:
     outputs:
       stack_version: ${{ steps.extract_version.outputs.version }}
     runs-on: ubuntu-latest
@@ -17,18 +17,13 @@ jobs:
       - name: Checkout Cloudbeat repo
         uses: actions/checkout@v4
 
-      - name: Extract version from file
+      - name: Extract current version
         id: extract_version
         run: |
           version=$(grep defaultBeatVersion version/version.go | cut -f2 -d "\"")
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "Version is $version"
-  cloudbeat:
-    needs: extract-version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Cloudbeat repo
-        uses: actions/checkout@v4
+
       - name: Create Release branch
         run: |
           # branch out
@@ -39,15 +34,16 @@ jobs:
 
       - name: Bump cloudbeat version
         run: |
-
+          git checkout -b update_version main
           sed -i'' -E "s/defaultBeatVersion = \"[0-9]+\.[0-9]+\"/defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
           git diff
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
           # token: ${{ secrets.FORK_TOKEN }}
           commit-message: "Update Cloudbeat versions"
-          branch: "update-cloudbeat-bersion"
+          branch: "update_version"
           title: "Bump Cloudbeat"
           body: "Automated PR"
           base: ${{ env.branch }}
@@ -55,7 +51,7 @@ jobs:
           author: "Elastic Machine <elasticmachine@users.noreply.github.com>"
 
   integration:
-    needs: extract-version
+    needs: cloudbeat
     runs-on: ubuntu-latest
 
     steps:
@@ -70,7 +66,7 @@ jobs:
         run: |
           MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
 
-          # VERSION="${{ needs.extract-version.outputs.stack_version }}"
+          # VERSION="${{ needs.cloudbeat.outputs.stack_version }}"
           VERSION="5.5.5"
 
           MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
