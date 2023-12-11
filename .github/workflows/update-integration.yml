@@ -30,7 +30,7 @@ jobs:
 
       - name: Bump cloudbeat version
         run: |
-          sed -i'' -E "s/defaultBeatVersion = \"[0-9]+\.[0-9]+\"/defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
+          sed -i'' -E "s/const defaultBeatVersion = .*/defaultBeatVersion = \"${{github.event.inputs.version}}\"/g" version/version.go
           git diff
 
       - name: Create Pull Request
