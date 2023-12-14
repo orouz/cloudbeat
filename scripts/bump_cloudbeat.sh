@@ -40,8 +40,8 @@ update_version_arm_template() {
     echo "Update ARM template with new version"
     local single_account_file="deploy/azure/ARM-for-single-account.json"
     local organization_account_file="deploy/azure/ARM-for-organization-account.json"
-    jq ".parameters.ElasticAgentVersion.defaultValue = \"$NEXT_CLOUDBEAT_VERSION\"" $single_account_file > tmp.json && mv tmp.json $single_account_file
-    jq ".parameters.ElasticAgentVersion.defaultValue = \"$NEXT_CLOUDBEAT_VERSION\"" $organization_account_file > tmp.json && mv tmp.json $organization_account_file
+    jq --indent 4 ".parameters.ElasticAgentVersion.defaultValue = \"$NEXT_CLOUDBEAT_VERSION\"" $single_account_file > tmp.json && mv tmp.json $single_account_file
+    jq --indent 4 ".parameters.ElasticAgentVersion.defaultValue = \"$NEXT_CLOUDBEAT_VERSION\"" $organization_account_file > tmp.json && mv tmp.json $organization_account_file
 }
 
 update_version_beat() {
