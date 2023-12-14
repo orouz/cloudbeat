@@ -14,6 +14,7 @@ env:
   GITHUB_CI_TOKEN: ${{ secrets.FORK_TOKEN }}
   NEXT_CLOUDBEAT_VERSION: ${{ inputs.cloudbeat_version }}
   NEXT_INTEGRATION_VERSION: ${{ inputs.integration_version }}
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   cloudbeat:
