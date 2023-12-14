@@ -56,18 +56,16 @@ create_cloudbeat_pr() {
     git config --global user.email "elasticmachine@users.noreply.github.com"
     git config --global user.name "Elastic Machine"
 
-    git diff
     git checkout -b "$BRANCH" main
     git add .
     git commit -m "Bump cloudbeat to $NEXT_CLOUDBEAT_VERSION"
-    git log
-    echo "wtf"
+   
     # echo "Create PR to bump cloudbeat version"
     # # gh auth login --with-token $GITHUB_CI_TOKEN
-    # gh pr create --title "Bump cloudbeat" \
-    #          --body "Automated PR" \
-    #          --base "main" \
-    #          --head "$BRANCH"
+    gh pr create --title "Bump" \
+             --body "Automated PR" \
+             --base "main" \
+             --head "$BRANCH"
 }
 
 bump_cloudbeat() {
@@ -77,7 +75,7 @@ bump_cloudbeat() {
 }
 
 # create_release_branch
-git checkout main 
+# git checkout main 
 bump_cloudbeat
 create_cloudbeat_pr
 
