@@ -68,12 +68,12 @@ jobs:
           }
 
           create_integrations_pr() {
-              local BRANCH="bump-to-$CLOUDBEAT_VERSION"
+              local BRANCH="bump-to-$NEXT_CLOUDBEAT_VERSION"
               git config --global user.email "elasticmachine@users.noreply.github.com"
               git config --global user.name "Elastic Machine"
               git checkout -b "$BRANCH" main
               git add $MANIFEST_PATH
-              git commit -m "Bump integration manifest to $CLOUDBEAT_VERSION"
+              git commit -m "Bump integration manifest to $NEXT_CLOUDBEAT_VERSION"
               git push origin $BRANCH
               gh auth login --with-token $GITHUB_CI_TOKEN
               gh pr create --title "[Cloud Security] Update integration manifest" \
