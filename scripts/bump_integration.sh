@@ -31,6 +31,7 @@ create_integrations_pr() {
     git checkout -b "$BRANCH" main
     git add $MANIFEST_PATH
     git commit -m "Bump integration manifest to $CLOUDBEAT_VERSION"
+    git push origin $BRANCH
     gh auth login --with-token $GITHUB_CI_TOKEN
     gh pr create --title "[Cloud Security] Update integration manifest" \
              --body "Automated PR" \

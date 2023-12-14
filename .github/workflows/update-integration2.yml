@@ -34,12 +34,12 @@ jobs:
       - name: Bump cloudbeat
         run: scripts/bump_cloudbeat.sh
 
-  # integration:
-  #   runs-on: ubuntu-latest
+  integration:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout Integrations repo
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout Integrations repo
+        uses: actions/checkout@v4
 
-  #     - name: Bump Integration
-  #       run: scripts/bump_integration.sh
+      - name: Bump Integration
+        run: scripts/bump_integration.sh

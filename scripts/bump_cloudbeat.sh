@@ -12,6 +12,8 @@ echo "CURRENT_CLOUDBEAT_VERSION: $CURRENT_CLOUDBEAT_VERSION"
 echo "CURRENT_MINOR_VERSION: $CURRENT_MINOR_VERSION"
 
 create_release_branch() {
+    # continue if release branch already exists ?
+
     echo "Create and push a new release branch $CURRENT_MINOR_VERSION from main"
     git checkout -b "$CURRENT_MINOR_VERSION" main
     git push origin "$CURRENT_MINOR_VERSION"
@@ -61,8 +63,7 @@ create_cloudbeat_pr() {
     git commit -m "Bump cloudbeat to $NEXT_CLOUDBEAT_VERSION"
     git push origin "$BRANCH"
 
-    # echo "Create PR to bump cloudbeat version"
-    # # gh auth login --with-token $GITHUB_CI_TOKEN
+    echo "Create PR to bump cloudbeat version"
     gh pr create --title "Bump" \
              --body "Automated PR" \
              --base "main" \
