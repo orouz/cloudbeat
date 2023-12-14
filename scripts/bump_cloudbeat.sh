@@ -52,6 +52,10 @@ update_version_beat() {
 create_cloudbeat_pr() {
     echo "Add changes"
     local BRANCH="bump-to-$NEXT_CLOUDBEAT_VERSION"
+
+    git config --global user.email "elasticmachine@users.noreply.github.com"
+    git config --global user.name "Elastic Machine"
+
     git checkout -b "$BRANCH" main
     git add .
     git commit -m "Bump cloudbeat to $NEXT_CLOUDBEAT_VERSION"
