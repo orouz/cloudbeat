@@ -28,7 +28,7 @@ jobs:
           version=$(grep defaultBeatVersion version/version.go | cut -f2 -d "\"")
           echo $version
           echo "CURRENT_CLOUDBEAT_VERSION=$version" >> $GITHUB_ENV
-          echo "Bumping $CURRENT_CLOUDBEAT_VERSION to $NEXT_CLOUDBEAT_VERSION"
+          echo "Bumping $version to $NEXT_CLOUDBEAT_VERSION"
 
       - name: Bump cloudbeat
         run: scripts/bump_cloudbeat.sh
