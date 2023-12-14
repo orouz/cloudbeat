@@ -10,7 +10,8 @@ MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
 
 checkout_integration_repo() {
     # git clone git@github.com:orouz/integrations.git
-    git clone https://orouz:${GH_TOKEN}@github.com/orouz/integrations.git
+    gh auth login --with-token 
+    gh repo clone orouz/integrations
     cd integrations
 }
 
