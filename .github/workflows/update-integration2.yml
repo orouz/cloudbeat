@@ -35,6 +35,7 @@ jobs:
         run: scripts/bump_cloudbeat.sh
 
   integration:
+    needs: cloudbeat
     runs-on: ubuntu-latest
 
     steps:
