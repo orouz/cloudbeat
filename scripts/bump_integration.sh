@@ -39,6 +39,8 @@ create_integrations_pr() {
              --head "$BRANCH"
 }
 
+replace_manifest_version_vars
+create_integrations_pr
 
 # bump_integration_version() { 
 #     # NEXT_INTEGRATION_VERSION
