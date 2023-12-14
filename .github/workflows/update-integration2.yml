@@ -50,10 +50,10 @@ jobs:
           MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
 
           replace_manifest_version_vars() {
-              MINOR_VERSION=$(echo $VERSION | cut -d '.' -f1,2)
+              MINOR_VERSION=$(echo $NEXT_CLOUDBEAT_VERSION | cut -d '.' -f1,2)
               echo "MINOR_VERSION is $MINOR_VERSION"
 
-              PATCH_VERSION=$VERSION
+              PATCH_VERSION=$NEXT_CLOUDBEAT_VERSION
               echo "PATCH_VERSION is $PATCH_VERSION"
 
               # cis_gcp
