@@ -56,6 +56,7 @@ create_cloudbeat_pr() {
     git config --global user.email "elasticmachine@users.noreply.github.com"
     git config --global user.name "Elastic Machine"
 
+    git diff
     git checkout -b "$BRANCH" main
     git add .
     git commit -m "Bump cloudbeat to $NEXT_CLOUDBEAT_VERSION"
@@ -70,8 +71,8 @@ create_cloudbeat_pr() {
 
 bump_cloudbeat() {
     update_version_mergify
-    update_version_arm_template
-    update_version_beat
+    # update_version_arm_template
+    # update_version_beat
 }
 
 create_release_branch
