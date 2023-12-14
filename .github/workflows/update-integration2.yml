@@ -1,0 +1,43 @@
+name: Bump Cloudbeat version2
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloudbeat_version:
+        description: "The new cloudbeat version number to bump to"
+        required: true
+      integration_version:
+        description: "The new integration version number to bump to"
+        required: true
+
+env:
+  GITHUB_CI_TOKEN: ${{ secrets.FORK_TOKEN }}
+  NEXT_CLOUDBEAT_VERSION: ${{ inputs.cloudbeat_version }}
+  NEXT_INTEGRATION_VERSION: ${{ inputs.integration_version }}
+
+jobs:
+  cloudbeat:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Cloudbeat repo
+        uses: actions/checkout@v4
+
+      - name: exract version
+        run: |
+          version=$(grep defaultBeatVersion version/version.go | cut -f2 -d "\"")
+          echo "CURRENT_CLOUDBEAT_VERSION="$version" >> $GITHUB_ENV
+          echo "Bumping $CURRENT_CLOUDBEAT_VERSION to $NEXT_CLOUDBEAT_VERSION"
+
+      - name: Bump cloudbeat
+        run: scripts/bump_cloudbeat.sh
+
+  # integration:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout Integrations repo
+  #       uses: actions/checkout@v4
+
+  #     - name: Bump Integration
+  #       run: scripts/bump_integration.sh
