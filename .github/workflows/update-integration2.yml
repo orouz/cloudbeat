@@ -75,7 +75,7 @@ jobs:
               git add $MANIFEST_PATH
               git commit -m "Bump integration manifest to $NEXT_CLOUDBEAT_VERSION"
               git push origin $BRANCH
-              gh auth login --with-token
+              # gh auth login --with-token
               gh pr create --title "[Cloud Security] Update integration manifest" \
                       --body "Automated PR" \
                       --base "main" \
