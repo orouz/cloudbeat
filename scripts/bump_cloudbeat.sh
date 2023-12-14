@@ -60,13 +60,14 @@ create_cloudbeat_pr() {
     git checkout -b "$BRANCH" main
     git add .
     git commit -m "Bump cloudbeat to $NEXT_CLOUDBEAT_VERSION"
-    
-    echo "Create PR to bump cloudbeat version"
-    # gh auth login --with-token $GITHUB_CI_TOKEN
-    gh pr create --title "Bump cloudbeat" \
-             --body "Automated PR" \
-             --base "main" \
-             --head "$BRANCH"
+    git log
+    echo "wtf"
+    # echo "Create PR to bump cloudbeat version"
+    # # gh auth login --with-token $GITHUB_CI_TOKEN
+    # gh pr create --title "Bump cloudbeat" \
+    #          --body "Automated PR" \
+    #          --base "main" \
+    #          --head "$BRANCH"
 }
 
 bump_cloudbeat() {
