@@ -28,6 +28,8 @@ replace_manifest_version_vars() {
 
 create_integrations_pr() {
     local BRANCH="bump-to-$CLOUDBEAT_VERSION"
+    git config --global user.email "elasticmachine@users.noreply.github.com"
+    git config --global user.name "Elastic Machine"
     git checkout -b "$BRANCH" main
     git add $MANIFEST_PATH
     git commit -m "Bump integration manifest to $CLOUDBEAT_VERSION"
