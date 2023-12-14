@@ -40,6 +40,10 @@ jobs:
     steps:
       - name: Checkout Integrations repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.FORK_TOKEN }}
+          repository: orouz/integrations
+          ref: main
 
       - name: Bump Integration
         run: scripts/bump_integration.sh
