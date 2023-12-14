@@ -64,7 +64,7 @@ jobs:
               sed -i'' -E "s/cloudformation-cspm-ACCOUNT_TYPE-[0-9]+\.[0-9]+\.[0-9]+/cloudformation-cspm-ACCOUNT_TYPE-$PATCH_VERSION/g" $MANIFEST_PATH
 
               # cis_azure
-              sed -i'' -E "s/cloudbeat%2F[0-9]+\.[0-9]+/cloudbeat%2F$PATCH_VERSION/g" $MANIFEST_PATH
+              sed -i'' -E "s/cloudbeat%2F[0-9]+\.[0-9]+/cloudbeat%2F$MINOR_VERSION/g" $MANIFEST_PATH
           }
 
           create_integrations_pr() {
@@ -75,7 +75,7 @@ jobs:
               git add $MANIFEST_PATH
               git commit -m "Bump integration manifest to $NEXT_CLOUDBEAT_VERSION"
               git push origin $BRANCH
-              # gh auth login --with-token
+              
               gh pr create --title "[Cloud Security] Update integration manifest" \
                       --body "Automated PR" \
                       --base "main" \
