@@ -11,10 +11,9 @@ on:
         required: true
 
 env:
-  GITHUB_CI_TOKEN: ${{ secrets.FORK_TOKEN }}
+  GH_TOKEN: ${{ secrets.CLOUDSEC_CLIENT_TOKEN }}
   NEXT_CLOUDBEAT_VERSION: ${{ inputs.cloudbeat_version }}
   NEXT_INTEGRATION_VERSION: ${{ inputs.integration_version }}
-  GH_TOKEN: ${{ github.token }}
 
 jobs:
   cloudbeat:
@@ -76,7 +75,7 @@ jobs:
               git add $MANIFEST_PATH
               git commit -m "Bump integration manifest to $NEXT_CLOUDBEAT_VERSION"
               git push origin $BRANCH
-              gh auth login --with-token <<<"$GITHUB_CI_TOKEN"
+              gh auth login --with-token <<<"$GH_TOKEN"
               gh pr create --title "[Cloud Security] Update integration manifest" \
                       --body "Automated PR" \
                       --base "main" \
