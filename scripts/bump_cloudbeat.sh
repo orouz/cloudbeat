@@ -76,7 +76,7 @@ bump_cloudbeat() {
     # update_version_beat
 }
 
-create_release_branch
+# create_release_branch
 git checkout main 
 bump_cloudbeat
 create_cloudbeat_pr
