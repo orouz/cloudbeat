@@ -55,10 +55,11 @@ update_manifest_version() {
 }
 
 update_changelog() {
-    local CHANGELOG_PATH="packages/cloud_security_posture/changelog.yml"
+    local CHANGELOG_PATH="packages/cloud_security_posture/changelog.yml"\
     # TODO: replace the existing preview version?
     yq -i ".[0].version = \"$NEXT_INTEGRATION_VERSION\"" $CHANGELOG_PATH
-    yq -i ".[0].changes += [{"description": "Bump version", "type": "enhancement", "link": strenv(PR_URL) }]" $CHANGELOG_PATH
+    # this line below requires single quotes and strenv(PR_URL) to interpolate this env var
+    yq -i '.[0].changes += [{"description": "Bump version", "type": "enhancement", "link": strenv(PR_URL) }]' $CHANGELOG_PATH
     git add $CHANGELOG_PATH
     git commit -m "Update changelog version"
     git push origin $BRANCH
