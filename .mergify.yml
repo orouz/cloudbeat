@@ -37,15 +37,7 @@ pull_request_rules:
       - conflict
     actions:
       comment:
-        message: |
-          This pull request is now in conflicts. Could you fix it? 🙏
-          To fixup this pull request, you can check out it locally. See documentation: https://help.github.com/articles/checking-out-pull-requests-locally/
-          ```
-          git fetch upstream
-          git checkout -b {{head}} upstream/{{head}}
-          git merge upstream/{{base}}
-          git push upstream {{head}}
-          ```
+        message: "This pull request is now in conflicts. Could you fix it? \U0001F64F\nTo fixup this pull request, you can check out it locally. See documentation: https://help.github.com/articles/checking-out-pull-requests-locally/\n```\ngit fetch upstream\ngit checkout -b {{head}} upstream/{{head}}\ngit merge upstream/{{base}}\ngit push upstream {{head}}\n```\n"
   - name: close automated pull requests with bump updates if any conflict
     conditions:
       - -merged
@@ -116,8 +108,7 @@ pull_request_rules:
       - "#assignee>=1"
     actions:
       comment:
-        message: |
-          This pull request has not been merged yet. Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
+        message: "This pull request has not been merged yet. Could you please review and merge it @{{ assignee | join(', @') }}? \U0001F64F\n"
   - name: notify the backport policy
     conditions:
       - -label~=^backport
@@ -126,12 +117,7 @@ pull_request_rules:
       - -closed
     actions:
       comment:
-        message: |
-          This pull request does not have a backport label. Could you fix it @{{author}}? 🙏
-          To fixup this pull request, you need to add the backport labels for the needed
-          branches, such as:
-          * `backport-v./d./d./d` is the label to automatically backport to the `8./d` branch. `/d` is the digit
-          **NOTE**: `backport-skip` has been added to this pull request.
+        message: "This pull request does not have a backport label. Could you fix it @{{author}}? \U0001F64F\nTo fixup this pull request, you need to add the backport labels for the needed\nbranches, such as:\n* `backport-v./d./d./d` is the label to automatically backport to the `8./d` branch. `/d` is the digit\n**NOTE**: `backport-skip` has been added to this pull request.\n"
       label:
         add:
           - backport-skip
@@ -261,3 +247,16 @@ pull_request_rules:
         labels:
           - "backport"
         title: "[{{ destination_branch }}](backport #{{ number }}) {{ title }}"
+  - name: backport patches to 8.12 branch
+    conditions:
+      - merged
+      - label=backport-v8.12.0
+    actions:
+      backport:
+        assignees:
+          - '{{ author }}'
+        branches:
+          - "8.12"
+        labels:
+          - backport
+        title: '[{{ destination_branch }}](backport #{{ number }}) {{ title }}'
