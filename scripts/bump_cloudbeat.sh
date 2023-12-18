@@ -17,20 +17,21 @@ create_release_branch() {
 
 update_version_mergify() {
     echo "Update .mergify.yml with new version"
-    yq '.pull_request_rules += [{
-      "name": "backport patches to " + strenv(CURRENT_MINOR_VERSION) + " branch",
-      "conditions": [
-        "merged",
-        "label=backport-v" + strenv(CURRENT_CLOUDBEAT_VERSION)
-      ],
-      "actions": {
-      "backport": {
-          "assignees": ["{{ author }}"],
-          "branches": [strenv(CURRENT_MINOR_VERSION)],
-          "labels": ["backport"],
-          "title": "[{{ destination_branch }}](backport #{{ number }}) {{ title }}"
-        }}
-      }]' -i .mergify.yml
+    cat << EOF >> .mergify.yml
+  - name: backport patches to $CURRENT_MINOR_VERSION branch
+    conditions:
+      - merged
+      - label=backport-v$CURRENT_CLOUDBEAT_VERSION
+    actions:
+      backport:
+        assignees:
+          - "{{ author }}"
+        branches:
+          - "$CURRENT_MINOR_VERSION"
+        labels:
+          - "backport"
+        title: "[{{ destination_branch }}](backport #{{ number }}) {{ title }}"
+EOF
 }
 
 update_version_arm_template() {
