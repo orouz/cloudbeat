@@ -5,6 +5,8 @@ MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
 INTEGRATION_REPO="orouz/integrations"
 BRANCH="bump-to-$NEXT_CLOUDBEAT_VERSION"
 
+yq --version
+
 checkout_integration_repo() {
     gh auth setup-git
     gh repo clone $INTEGRATION_REPO
@@ -56,7 +58,7 @@ update_changelog() {
     local CHANGELOG_PATH="packages/cloud_security_posture/changelog.yml"
     # TODO: replace the existing preview version?
     yq -i ".[0].version = \"$NEXT_INTEGRATION_VERSION\"" $CHANGELOG_PATH
-    yq -i ".[0].changes += [{"description": "Bump version", "type": "enhancement", "link": $PR_URL }]" $CHANGELOG_PATH
+    # yq -i ".[0].changes += [{"description": "Bump version", "type": "enhancement", "link": $PR_URL }]" $CHANGELOG_PATH
     git add $CHANGELOG_PATH
     git commit -m "Update changelog version"
     git push origin $BRANCH
