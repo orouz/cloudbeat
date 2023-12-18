@@ -1,17 +1,12 @@
-
-
-
-# Bump integration version
-# PR to integration repo to change template URLS
-# PR to integration repo to change kibana condition
-# PR to integration repo to change to preview version / production version
+#!/bin/bash
+set -euo pipefail
 
 MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
+INTEGRATION_REPO="orouz/integrations"
 
 checkout_integration_repo() {
-    # git clone git@github.com:orouz/integrations.git
-    gh auth login --with-token 
-    gh repo clone orouz/integrations
+    # gh auth login --with-token 
+    gh repo clone $INTEGRATION_REPO
     cd integrations
 }
 
@@ -45,7 +40,8 @@ create_integrations_pr() {
     gh pr create --title "[Cloud Security] Update integration manifest" \
   --body "Automated PR" \
   --base "main" \
-  --head "$BRANCH"
+  --head "$BRANCH" \
+  --repo "$INTEGRATION_REPO"
 }
 
 checkout_integration_repo
