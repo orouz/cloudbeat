@@ -33,7 +33,7 @@ update_manifest_version_vars() {
     sed -i'' -E "s/cloudbeat%2F[0-9]+\.[0-9]+/cloudbeat%2F$MINOR_VERSION/g" $MANIFEST_PATH
 
     git add $MANIFEST_PATH
-    git commit -m "Bump integration manifest to $NEXT_CLOUDBEAT_VERSION"
+    git commit -m "Update manifest template vars"
     git push origin $BRANCH
 }
 
@@ -46,9 +46,9 @@ create_integrations_pr() {
 }
 
 update_manifest_version() {
-    yq -i '.version = "$NEXT_INTEGRATION_VERSION"' $MANIFEST_PATH
+    yq -i ".version = \"$NEXT_INTEGRATION_VERSION\"" $MANIFEST_PATH
     git add $MANIFEST_PATH
-    git commit -m 'Update manifest version to $NEXT_INTEGRATION_VERSION'
+    git commit -m "Update manifest version"
     git push origin $BRANCH
 }
 

@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-
-
 export NEXT_MINOR_VERSION=$(echo $NEXT_CLOUDBEAT_VERSION | cut -d '.' -f1,2)
 export CURRENT_MINOR_VERSION=$(echo $CURRENT_CLOUDBEAT_VERSION | cut -d '.' -f1,2)
 
@@ -64,7 +62,7 @@ create_cloudbeat_pr() {
     git push origin "$BRANCH"
 
     echo "Create PR to bump cloudbeat version"
-    gh pr create --title "Bump" \
+    gh pr create --title "Bump cloudbeat version" \
              --body "Automated PR" \
              --base "main" \
              --head "$BRANCH"
