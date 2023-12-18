@@ -47,8 +47,6 @@ create_integrations_pr() {
   --base "main" \
   --head "$BRANCH" \
   --repo "$INTEGRATION_REPO")"
-
-  echo "PR_URL is $PR_URL"
 }
 
 update_manifest_version() {
@@ -59,13 +57,12 @@ update_manifest_version() {
 }
 
 update_changelog() {
-    echo "Using $PR_URL for PR_URL"
-    export FF=$PR_URL
+    export PR=$PR_URL
     local CHANGELOG_PATH="packages/cloud_security_posture/changelog.yml"\
     # TODO: replace the existing preview version?
     yq -i ".[0].version = \"$NEXT_INTEGRATION_VERSION\"" $CHANGELOG_PATH
-    # this line below requires single quotes and strenv(PR_URL) to interpolate this env var
-    yq -i '.[0].changes += [{"description": "Bump version", "type": "enhancement", "link": env(FF) }]' $CHANGELOG_PATH
+    # this line below requires single quotes and strenv(PR) to interpolate this env var
+    yq -i '.[0].changes += [{"description": "Bump version", "type": "enhancement", "link": env(PR) }]' $CHANGELOG_PATH
     git add $CHANGELOG_PATH
     git commit -m "Update changelog version"
     git push origin $BRANCH

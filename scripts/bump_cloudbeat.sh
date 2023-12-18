@@ -10,8 +10,6 @@ echo "CURRENT_CLOUDBEAT_VERSION: $CURRENT_CLOUDBEAT_VERSION"
 echo "CURRENT_MINOR_VERSION: $CURRENT_MINOR_VERSION"
 
 create_release_branch() {
-    # continue if release branch already exists ?
-
     echo "Create and push a new release branch $CURRENT_MINOR_VERSION from main"
     git checkout -b "$CURRENT_MINOR_VERSION" main
     git push origin "$CURRENT_MINOR_VERSION"
@@ -19,21 +17,20 @@ create_release_branch() {
 
 update_version_mergify() {
     echo "Update .mergify.yml with new version"
-    cat << EOF >> .mergify.yml
-  - name: backport patches to $CURRENT_MINOR_VERSION branch
-    conditions:
-      - merged
-      - label=backport-v$CURRENT_CLOUDBEAT_VERSION
-    actions:
-      backport:
-        assignees:
-          - "{{ author }}"
-        branches:
-          - "$CURRENT_MINOR_VERSION"
-        labels:
-          - "backport"
-        title: "[{{ destination_branch }}](backport #{{ number }}) {{ title }}"
-EOF
+    yq '.pull_request_rules += [{
+      "name": "backport patches to " + strenv(CURRENT_MINOR_VERSION) + " branch",
+      "conditions": [
+        "merged",
+        "label=backport-v" + strenv(CURRENT_CLOUDBEAT_VERSION)
+      ],
+      "actions": {
+      "backport": {
+          "assignees": ["{{ author }}"],
+          "branches": [strenv(CURRENT_MINOR_VERSION)],
+          "labels": ["backport"],
+          "title": "[{{ destination_branch }}](backport #{{ number }}) {{ title }}"
+        }}
+      }]' -i .mergify.yml
 }
 
 update_version_arm_template() {
