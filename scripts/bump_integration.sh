@@ -41,12 +41,12 @@ update_manifest_version_vars() {
 
 create_integrations_pr() {
   echo 'Creating a PR to update integration'
-  
-  PR_URL=$(gh pr create --title "[Cloud Security] Update integration manifest" \
+
+  PR_URL="$(gh pr create --title "[Cloud Security] Update integration manifest" \
   --body "Automated PR" \
   --base "main" \
   --head "$BRANCH" \
-  --repo "$INTEGRATION_REPO")
+  --repo "$INTEGRATION_REPO")"
 
   echo "PR_URL is $PR_URL"
 }
@@ -59,6 +59,8 @@ update_manifest_version() {
 }
 
 update_changelog() {
+    echo "Using $PR_URL for PR_URL"
+
     local CHANGELOG_PATH="packages/cloud_security_posture/changelog.yml"\
     # TODO: replace the existing preview version?
     yq -i ".[0].version = \"$NEXT_INTEGRATION_VERSION\"" $CHANGELOG_PATH
