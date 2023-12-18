@@ -65,7 +65,7 @@ update_changelog() {
     # TODO: replace the existing preview version?
     yq -i ".[0].version = \"$NEXT_INTEGRATION_VERSION\"" $CHANGELOG_PATH
     # this line below requires single quotes and strenv(PR_URL) to interpolate this env var
-    yq -i '.[0].changes += [{"description": "Bump version", "type": "enhancement", "link": strenv(PR_URL) }]' $CHANGELOG_PATH
+    yq -i '.[0].changes += [{"description": "Bump version", "type": "enhancement", "link": env(PR_URL) }]' $CHANGELOG_PATH
     git add $CHANGELOG_PATH
     git commit -m "Update changelog version"
     git push origin $BRANCH
