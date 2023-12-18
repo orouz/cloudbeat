@@ -3,15 +3,19 @@ set -euo pipefail
 
 MANIFEST_PATH="packages/cloud_security_posture/manifest.yml"
 INTEGRATION_REPO="orouz/integrations"
+BRANCH="bump-to-$NEXT_CLOUDBEAT_VERSION"
 
 checkout_integration_repo() {
-    # gh auth login --with-token 
     gh auth setup-git
     gh repo clone $INTEGRATION_REPO
     cd integrations
+    git config --global user.email "elasticmachine@users.noreply.github.com"
+    git config --global user.name "Elastic Machine"
 }
 
-replace_manifest_version_vars() {
+update_manifest_version_vars() {
+    git checkout -b "$BRANCH" main
+
     MINOR_VERSION=$(echo $NEXT_CLOUDBEAT_VERSION | cut -d '.' -f1,2)
     echo "MINOR_VERSION is $MINOR_VERSION"
 
@@ -27,17 +31,13 @@ replace_manifest_version_vars() {
 
     # cis_azure
     sed -i'' -E "s/cloudbeat%2F[0-9]+\.[0-9]+/cloudbeat%2F$MINOR_VERSION/g" $MANIFEST_PATH
-}
 
-create_integrations_pr() {
-    local BRANCH="bump-to-$NEXT_CLOUDBEAT_VERSION"
-    git config --global user.email "elasticmachine@users.noreply.github.com"
-    git config --global user.name "Elastic Machine"
-    git checkout -b "$BRANCH" main
     git add $MANIFEST_PATH
     git commit -m "Bump integration manifest to $NEXT_CLOUDBEAT_VERSION"
     git push origin $BRANCH
-    
+}
+
+create_integrations_pr() {
     gh pr create --title "[Cloud Security] Update integration manifest" \
   --body "Automated PR" \
   --base "main" \
@@ -45,6 +45,14 @@ create_integrations_pr() {
   --repo "$INTEGRATION_REPO"
 }
 
+update_manifest_version() {
+    yq -i '.version = "$NEXT_INTEGRATION_VERSION"' $MANIFEST_PATH
+    git add $MANIFEST_PATH
+    git commit -m 'Update manifest version to $NEXT_INTEGRATION_VERSION'
+    git push origin $BRANCH
+}
+
 checkout_integration_repo
-replace_manifest_version_vars
+update_manifest_version_vars
 create_integrations_pr
+update_manifest_version
