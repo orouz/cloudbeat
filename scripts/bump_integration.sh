@@ -40,11 +40,15 @@ update_manifest_version_vars() {
 }
 
 create_integrations_pr() {
+  echo 'Creating a PR to update integration'
+  
   PR_URL=$(gh pr create --title "[Cloud Security] Update integration manifest" \
   --body "Automated PR" \
   --base "main" \
   --head "$BRANCH" \
   --repo "$INTEGRATION_REPO")
+
+  echo "PR_URL is $PR_URL"
 }
 
 update_manifest_version() {
