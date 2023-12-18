@@ -6,6 +6,7 @@ INTEGRATION_REPO="orouz/integrations"
 
 checkout_integration_repo() {
     # gh auth login --with-token 
+    gh auth setup-git
     gh repo clone $INTEGRATION_REPO
     cd integrations
 }
