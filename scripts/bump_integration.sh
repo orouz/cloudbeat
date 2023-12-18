@@ -56,7 +56,7 @@ update_changelog() {
     local CHANGELOG_PATH="packages/cloud_security_posture/changelog.yml"
     # TODO: replace the existing preview version?
     yq -i ".[0].version = $NEXT_INTEGRATION_VERSION" $CHANGELOG_PATH
-    yq -i ".[0].changes += [{"description": "Bump version", "type": "enhancement", "link": $PR_URL }]" $CHANGELOG_PATH
+    # yq -i ".[0].changes += [{"description": "Bump version", "type": "enhancement", "link": $PR_URL }]" $CHANGELOG_PATH
     git add $CHANGELOG_PATH
     git commit -m "Update changelog version"
     git push origin $BRANCH
