@@ -11,6 +11,9 @@ on:
       - scripts/publish_cft.sh
       - .github/workflows/publish-cloudformation.yml
 
+permissions:
+  actions: "write"
+
 jobs:
   publish_cloudformation_foo:
     runs-on: ubuntu-20.04
@@ -23,7 +26,8 @@ jobs:
               echo "Branch creation event and name matches the pattern. Proceeding with the workflow."
             else
               echo "Branch creation event, but the branch name doesn't match the pattern. Exiting the workflow."
-              exit 0
+              gh run cancel ${{ github.run_id }}
+              gh run watch ${{ github.run_id }}
             fi
           else
             echo "Not a branch creation event. Proceeding with the workflow."
