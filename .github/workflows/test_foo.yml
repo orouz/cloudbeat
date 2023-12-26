@@ -11,6 +11,9 @@ on:
       - scripts/publish_cft.sh
       - .github/workflows/publish-cloudformation.yml
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 permissions:
   actions: "write"
 
