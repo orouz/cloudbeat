@@ -19,6 +19,7 @@ package gcpfetcher
 
 import (
 	"context"
+	"strings"
 
 	"github.com/samber/lo"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -83,7 +84,7 @@ func (f *assetsInventory) fetch(ctx context.Context, assetChan chan<- inventory.
 	}
 
 	for _, item := range gcpAssets {
-		assetChan <- inventory.NewAssetEvent(
+		asset := inventory.NewAssetEvent(
 			classification,
 			item.Name,
 			item.Name,
@@ -100,7 +101,62 @@ func (f *assetsInventory) fetch(ctx context.Context, assetChan chan<- inventory.
 				ServiceName: assetType,
 			}),
 		)
+		enrichAsset(asset, item)
+		assetChan <- asset
 	}
+}
+
+func enrichAsset(asset inventory.AssetEvent, item *gcpinventory.ExtendedGcpAsset) {
+	fields := item.GetResource().GetData().GetFields()
+
+	switch item.AssetType {
+	case gcpinventory.ComputeInstanceAssetType:
+		if value := getFieldValue(fields, "machineType"); value != "" {
+			asset.Cloud.MachineType = value
+		}
+		if value := getFieldValue(fields, "zone"); value != "" {
+			asset.Cloud.AvailabilityZone = value
+		}
+		if value := getFieldValue(fields, "id"); value != "" {
+			asset.Cloud.InstanceID = value
+		}
+		if value := getFieldValue(fields, "name"); value != "" {
+			asset.Cloud.InstanceName = value
+		}
+	case gcpinventory.ComputeNetworkAssetType:
+		if value := getFieldValue(fields, "name"); value != "" {
+			asset.Network.Name = value
+		}
+	case gcpinventory.ComputeFirewallAssetType:
+		if value := getFieldValue(fields, "name"); value != "" {
+			asset.Network.Name = value
+		}
+		if value := getFieldValue(fields, "direction"); value != "" {
+			asset.Network.Direction = value
+		}
+	case gcpinventory.ComputeSubnetworkAssetType:
+		if value := getFieldValue(fields, "name"); value != "" {
+			asset.Network.Name = value
+		}
+		if value := getFieldValue(fields, "stackType"); value != "" {
+			asset.Network.Type = strings.ToLower(value)
+		}
+	case gcpinventory.ComputeDiskAssetType:
+		if value := getFieldValue(fields, "architecture"); value != "" {
+			asset.Host.Architecture = value
+		}
+		if value := getFieldValue(fields, "zone"); value != "" {
+			asset.Cloud.AvailabilityZone = value
+		}
+	}
+
+}
+
+func getFieldValue(fields map[string]*structpb.Value, key string) string {
+	if value, ok := fields[key]; ok {
+		return value.GetStringValue()
+	}
+	return ""
 }
 
 func (f *assetsInventory) findRelatedAssetIds(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {

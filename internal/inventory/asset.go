@@ -161,7 +161,9 @@ type Event struct {
 }
 
 type Network struct {
-	Name string `json:"name,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Direction string `json:"direction,omitempty"`
+	Type      string `json:"type,omitempty"`
 }
 
 type Cloud struct {
