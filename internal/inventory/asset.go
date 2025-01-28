@@ -140,9 +140,12 @@ type AssetEvent struct {
 	Event         Event
 	Network       *Network
 	Cloud         *Cloud
+	Orchestrator  *Orchestrator
+	Container     *Container
 	Host          *Host
 	User          *User
 	Labels        map[string]string
+	Tags          []string
 	RawAttributes *any
 }
 
@@ -164,6 +167,8 @@ type Network struct {
 	Name      string `json:"name,omitempty"`
 	Direction string `json:"direction,omitempty"`
 	Type      string `json:"type,omitempty"`
+	// Protocol string `json:"protocol,omitempty"`
+	// Transport []string `json:"transport,omitempty"`
 }
 
 type Cloud struct {
@@ -190,8 +195,22 @@ type Host struct {
 }
 
 type User struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	ID    string   `json:"id,omitempty"`
+	Name  string   `json:"name,omitempty"`
+	Email string   `json:"email,omitempty"`
+	Roles []string `json:"roles,omitempty"`
+}
+
+type Orchestrator struct {
+	ClusterID   string `json:"cluster.id,omitempty"`
+	ClusterName string `json:"cluster.name,omitempty"`
+	Type        string `json:"type,omitempty"`
+}
+
+type Container struct {
+	ID        string `json:"id,omitempty"`
+	Name      string `json:"name,omitempty"`
+	ImageName string `json:"image.name,omitempty"`
 }
 
 // AssetEnricher functional builder function
@@ -244,6 +263,16 @@ func WithLabels(labels map[string]string) AssetEnricher {
 		}
 
 		a.Labels = labels
+	}
+}
+
+func WithTags(tags []string) AssetEnricher {
+	return func(a *AssetEvent) {
+		if len(tags) == 0 {
+			return
+		}
+
+		a.Tags = tags
 	}
 }
 

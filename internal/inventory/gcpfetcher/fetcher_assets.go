@@ -21,6 +21,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/samber/lo"
 	"google.golang.org/protobuf/types/known/structpb"
 
@@ -100,63 +101,147 @@ func (f *assetsInventory) fetch(ctx context.Context, assetChan chan<- inventory.
 				ProjectName: item.CloudAccount.OrganizationName,
 				ServiceName: assetType,
 			}),
+			inventory.WithLabels(getAssetLabels(item)),
+			inventory.WithTags(getAssetTags(item)),
 		)
-		enrichAsset(asset, item)
+		enrichAsset(&asset, item)
 		assetChan <- asset
 	}
 }
 
-func enrichAsset(asset inventory.AssetEvent, item *gcpinventory.ExtendedGcpAsset) {
+func getAssetTags(item *gcpinventory.ExtendedGcpAsset) []string {
+	if item.Resource == nil && item.Resource.Data == nil {
+		return nil
+	}
 	fields := item.GetResource().GetData().GetFields()
-
-	switch item.AssetType {
-	case gcpinventory.ComputeInstanceAssetType:
-		if value := getFieldValue(fields, "machineType"); value != "" {
-			asset.Cloud.MachineType = value
-		}
-		if value := getFieldValue(fields, "zone"); value != "" {
-			asset.Cloud.AvailabilityZone = value
-		}
-		if value := getFieldValue(fields, "id"); value != "" {
-			asset.Cloud.InstanceID = value
-		}
-		if value := getFieldValue(fields, "name"); value != "" {
-			asset.Cloud.InstanceName = value
-		}
-	case gcpinventory.ComputeNetworkAssetType:
-		if value := getFieldValue(fields, "name"); value != "" {
-			asset.Network.Name = value
-		}
-	case gcpinventory.ComputeFirewallAssetType:
-		if value := getFieldValue(fields, "name"); value != "" {
-			asset.Network.Name = value
-		}
-		if value := getFieldValue(fields, "direction"); value != "" {
-			asset.Network.Direction = value
-		}
-	case gcpinventory.ComputeSubnetworkAssetType:
-		if value := getFieldValue(fields, "name"); value != "" {
-			asset.Network.Name = value
-		}
-		if value := getFieldValue(fields, "stackType"); value != "" {
-			asset.Network.Type = strings.ToLower(value)
-		}
-	case gcpinventory.ComputeDiskAssetType:
-		if value := getFieldValue(fields, "architecture"); value != "" {
-			asset.Host.Architecture = value
-		}
-		if value := getFieldValue(fields, "zone"); value != "" {
-			asset.Cloud.AvailabilityZone = value
+	if tagsObj, ok := fields["tags"]; ok {
+		if items, ok := tagsObj.GetStructValue().GetFields()["items"]; ok {
+			tags := items.GetListValue().GetValues()
+			var t []string
+			for _, tag := range tags {
+				t = append(t, tag.GetStringValue())
+			}
+			return t
 		}
 	}
-
+	return nil
 }
 
-func getFieldValue(fields map[string]*structpb.Value, key string) string {
-	if value, ok := fields[key]; ok {
-		return value.GetStringValue()
+func getAssetLabels(item *gcpinventory.ExtendedGcpAsset) map[string]string {
+	if item.Resource == nil && item.Resource.Data == nil {
+		return nil
 	}
-	return ""
+	fields := item.GetResource().GetData().GetFields()
+	if value, ok := fields["labels"]; ok {
+		convertedMap := make(map[string]string)
+		if err := mapstructure.Decode(value.GetStructValue().AsMap(), &convertedMap); err != nil {
+			return nil
+		}
+		return convertedMap
+	}
+	return nil
+}
+
+func enrichAsset(asset *inventory.AssetEvent, item *gcpinventory.ExtendedGcpAsset) {
+	if item.Resource == nil && item.Resource.Data == nil {
+		return
+	}
+	fields := item.GetResource().GetData().GetFields()
+	getStringValue := func(key string, f map[string]*structpb.Value) string {
+		if value, ok := f[key]; ok {
+			return value.GetStringValue()
+		}
+		return ""
+	}
+
+	switch item.AssetType {
+	case gcpinventory.IamRoleAssetType:
+		// TODO: Cloud, Entity, User, Labels (if tags/labels are available)
+		// TODO: what user values? https://cloud.google.com/iam/docs/reference/rest/v1/roles
+
+	case gcpinventory.IamServiceAccountKeyAssetType:
+		// TODO: Cloud, Entity, User (the SA key is for), Labels (if tags/labels are available)
+		// TODO: what user values? https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts.keys
+
+	case gcpinventory.IamServiceAccountAssetType:
+		// TODO: Cloud, Entity, User, Labels (if tags/labels are available)
+		asset.User = &inventory.User{
+			Email: getStringValue("email", fields),
+			Name:  getStringValue("displayName", fields),
+		}
+
+	case gcpinventory.ComputeInstanceAssetType:
+		// TODO: Cloud, Entity, Host, Labels (if tags/labels are available)
+		// https://cloud.google.com/compute/docs/reference/rest/v1/instances#resource:-instance
+		asset.Cloud.InstanceID = getStringValue("id", fields)
+		asset.Cloud.InstanceName = getStringValue("name", fields)
+		asset.Cloud.MachineType = getStringValue("machineType", fields)
+		asset.Cloud.AvailabilityZone = getStringValue("zone", fields)
+
+	case gcpinventory.GkeClusterAssetType:
+		// TODO: Cloud, Entity, Orchastrator, Labels (if tags/labels are available)
+		asset.Orchestrator = &inventory.Orchestrator{
+			Type:        "kubernetes",
+			ClusterName: getStringValue("name", fields),
+			ClusterID:   getStringValue("id", fields),
+		}
+	case gcpinventory.CloudRunService:
+		// TODO: Cloud, Entity, Container, Labels (if tags/labels are available)
+		container := &inventory.Container{}
+		// if metadata, ok := fields["metadata"]; ok {
+		// 	metadataFields := metadata.GetStructValue().GetFields()
+		// 	container.Name = getStringValue("name", metadataFields)
+		// 	container.ID=  getStringValue("uid", metadataFields)
+		// }
+
+		if spec, ok := fields["spec"]; ok {
+			specFields := spec.GetStructValue().GetFields()
+			if containers, ok := specFields["containers"]; ok {
+				for _, containerValue := range containers.GetListValue().GetValues() {
+					containerFields := containerValue.GetStructValue().GetFields()
+					container.ImageName = getStringValue("image", containerFields)
+				}
+			}
+		}
+
+		asset.Container = container
+
+	case gcpinventory.CrmOrgAssetType:
+		// TODO: Cloud, Entity, Organization, Labels (if tags/labels are available)
+	case gcpinventory.CrmProjectAssetType:
+		// TODO: Cloud, Entity, Labels (if tags/labels are available)
+	case gcpinventory.CrmFolderAssetType:
+		// TODO: Cloud, Entity, Organization, Labels (if tags/labels are available)
+	case gcpinventory.ComputeFirewallAssetType:
+		// TODO: Cloud, Entity, Labels (if tags/labels are available)
+		// https://cloud.google.com/compute/docs/reference/rest/v1/firewalls#resource:-firewall
+		asset.Network = &inventory.Network{
+			Name:      getStringValue("name", fields), // use "network" field?
+			Direction: getStringValue("direction", fields),
+		}
+		// TODO:
+		// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-transport
+		// asset.Network.Transport = allowed[].IPProtocol (example: icmp)
+		// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-iana-number
+		// asset.Network.IanaNumber = allowed[].IPProtocol -> https://pkg.go.dev/golang.org/x/net/internal/iana
+	case gcpinventory.ComputeForwardingRuleAssetType:
+		// TODO: Cloud, Entity, Labels (if tags/labels are available)
+	case
+		// TODO: Cloud, Entity, Labels (if tags/labels are available)
+		// https://cloud.google.com/compute/docs/reference/rest/v1/subnetworks#resource:-subnetwork
+		gcpinventory.ComputeSubnetworkAssetType:
+		asset.Network = &inventory.Network{
+			Name: getStringValue("name", fields),
+			Type: strings.ToLower(getStringValue("stackType", fields)),
+		}
+	case gcpinventory.CloudFunctionAssetType:
+		// TODO: Cloud, Entity, FaaS, Labels (if tags/labels are available)
+	case
+		// TODO: Cloud, Entity, Labels (if tags/labels are available)
+		// https://cloud.google.com/storage/docs/json_api/v1/buckets#resource-representations
+		gcpinventory.StorageBucketAssetType:
+	}
+
 }
 
 func (f *assetsInventory) findRelatedAssetIds(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
