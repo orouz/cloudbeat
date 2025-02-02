@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/asset/apiv1/assetpb"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/elastic/cloudbeat/internal/infra/clog"
 	"github.com/elastic/cloudbeat/internal/inventory"
@@ -69,4 +70,105 @@ func TestAccountFetcher_Fetch_Assets(t *testing.T) {
 	provider.EXPECT().ListAllAssetTypesByName(mock.Anything, mock.AnythingOfType("[]string")).Return(assets, nil)
 	fetcher := newAssetsInventoryFetcher(logger, provider)
 	testutil.CollectResourcesAndMatch(t, fetcher, expected)
+}
+
+func TestAccountFetcher_Enrich_AssetType(t *testing.T) {
+	logger := clog.NewLogger("gcpfetcher_test")
+
+	var resources = map[string]*assetpb.Resource{
+		// gcpinventory.IamRoleAssetType: {},
+		gcpinventory.CrmFolderAssetType: {},
+		// gcpinventory.CrmProjectAssetType:           {},
+		// gcpinventory.StorageBucketAssetType:        {},
+		// gcpinventory.IamServiceAccountKeyAssetType: {},
+		gcpinventory.CrmOrgAssetType: {
+			Data: NewStructMap(map[string]interface{}{
+				"displayName": "org",
+			}),
+		},
+		// gcpinventory.ComputeInstanceAssetType:       {},
+		// gcpinventory.ComputeFirewallAssetType:       {},
+		// gcpinventory.ComputeSubnetworkAssetType:     {},
+		// gcpinventory.IamServiceAccountAssetType:     {},
+		// gcpinventory.GkeClusterAssetType:            {},
+		// gcpinventory.ComputeForwardingRuleAssetType: {},
+		// gcpinventory.CloudFunctionAssetType:         {},
+		// gcpinventory.CloudRunService:                {},
+	}
+
+	var enrichedAssets = map[string]*inventory.AssetEvent{
+		// gcpinventory.IamRoleAssetType: {},
+		gcpinventory.CrmFolderAssetType: {},
+		// gcpinventory.CrmProjectAssetType:           {},
+		// gcpinventory.StorageBucketAssetType:        {},
+		// gcpinventory.IamServiceAccountKeyAssetType: {},
+		gcpinventory.CrmOrgAssetType: {
+			Organization: &inventory.Organization{
+				Name: "org",
+			},
+		},
+		// gcpinventory.ComputeInstanceAssetType:       {},
+		// gcpinventory.ComputeFirewallAssetType:       {},
+		// gcpinventory.ComputeSubnetworkAssetType:     {},
+		// gcpinventory.IamServiceAccountAssetType:     {},
+		// gcpinventory.GkeClusterAssetType:            {},
+		// gcpinventory.ComputeForwardingRuleAssetType: {},
+		// gcpinventory.CloudFunctionAssetType:         {},
+		// gcpinventory.CloudRunService:                {},
+	}
+
+	gcpAssets := lo.Map(ResourcesToFetch, func(r ResourcesClassification, _ int) *gcpinventory.ExtendedGcpAsset {
+		asset := &gcpinventory.ExtendedGcpAsset{
+			Asset: &assetpb.Asset{
+				Name: "/projects/<project UUID>/some_resource", // name is the ID
+			},
+			CloudAccount: &fetching.CloudAccountMetadata{
+				AccountId:        "<project UUID>",
+				AccountName:      "<project name>",
+				OrganisationId:   "<org UUID>",
+				OrganizationName: "<org name>",
+			},
+		}
+		asset.AssetType = r.assetType
+		asset.Resource = resources[r.assetType]
+		return asset
+	})
+
+	expectedAssets := lo.Map(ResourcesToFetch, func(r ResourcesClassification, i int) inventory.AssetEvent {
+		baseEvent := inventory.NewAssetEvent(
+			r.classification,
+			"/projects/<project UUID>/some_resource",
+			"/projects/<project UUID>/some_resource",
+			inventory.WithRawAsset(gcpAssets[i]),
+			inventory.WithRelatedAssetIds([]string{}),
+			inventory.WithCloud(inventory.Cloud{
+				Provider:    inventory.GcpCloudProvider,
+				AccountID:   "<project UUID>",
+				AccountName: "<project name>",
+				ProjectID:   "<org UUID>",
+				ProjectName: "<org name>",
+				ServiceName: r.assetType,
+			}))
+
+		expectedEvent := enrichedAssets[r.assetType] // get enriched asset
+		// assign base event fields to expected event
+		expectedEvent.Event = baseEvent.Event
+		expectedEvent.Entity = baseEvent.Entity
+		expectedEvent.RawAttributes = baseEvent.RawAttributes
+		expectedEvent.Cloud = baseEvent.Cloud
+		return *expectedEvent
+	})
+
+	provider := newMockInventoryProvider(t)
+	provider.EXPECT().ListAllAssetTypesByName(mock.Anything, mock.AnythingOfType("[]string")).Return(gcpAssets, nil)
+	fetcher := newAssetsInventoryFetcher(logger, provider)
+	testutil.CollectResourcesAndMatch(t, fetcher, expectedAssets)
+}
+
+func NewStructMap(data map[string]interface{}) *structpb.Struct {
+	dataStruct, err := structpb.NewStruct(data)
+	if err != nil {
+		panic(err)
+	}
+	return dataStruct
 }

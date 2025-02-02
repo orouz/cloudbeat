@@ -47,18 +47,18 @@ type (
 var ResourcesToFetch = []ResourcesClassification{
 	{gcpinventory.CrmOrgAssetType, inventory.AssetClassificationGcpOrganization},
 	{gcpinventory.CrmFolderAssetType, inventory.AssetClassificationGcpFolder},
-	{gcpinventory.CrmProjectAssetType, inventory.AssetClassificationGcpProject},
-	{gcpinventory.ComputeInstanceAssetType, inventory.AssetClassificationGcpInstance},
-	{gcpinventory.ComputeFirewallAssetType, inventory.AssetClassificationGcpFirewall},
-	{gcpinventory.StorageBucketAssetType, inventory.AssetClassificationGcpBucket},
-	{gcpinventory.ComputeSubnetworkAssetType, inventory.AssetClassificationGcpSubnet},
-	{gcpinventory.IamServiceAccountAssetType, inventory.AssetClassificationGcpServiceAccount},
-	{gcpinventory.IamServiceAccountKeyAssetType, inventory.AssetClassificationGcpServiceAccountKey},
-	{gcpinventory.GkeClusterAssetType, inventory.AssetClassificationGcpGkeCluster},
-	{gcpinventory.ComputeForwardingRuleAssetType, inventory.AssetClassificationGcpForwardingRule},
-	{gcpinventory.CloudFunctionAssetType, inventory.AssetClassificationGcpCloudFunction},
-	{gcpinventory.CloudRunService, inventory.AssetClassificationGcpCloudRunService},
-	{gcpinventory.IamRoleAssetType, inventory.AssetClassificationGcpIamRole},
+	// {gcpinventory.CrmProjectAssetType, inventory.AssetClassificationGcpProject},
+	// {gcpinventory.ComputeInstanceAssetType, inventory.AssetClassificationGcpInstance},
+	// {gcpinventory.ComputeFirewallAssetType, inventory.AssetClassificationGcpFirewall},
+	// {gcpinventory.StorageBucketAssetType, inventory.AssetClassificationGcpBucket},
+	// {gcpinventory.ComputeSubnetworkAssetType, inventory.AssetClassificationGcpSubnet},
+	// {gcpinventory.IamServiceAccountAssetType, inventory.AssetClassificationGcpServiceAccount},
+	// {gcpinventory.IamServiceAccountKeyAssetType, inventory.AssetClassificationGcpServiceAccountKey},
+	// {gcpinventory.GkeClusterAssetType, inventory.AssetClassificationGcpGkeCluster},
+	// {gcpinventory.ComputeForwardingRuleAssetType, inventory.AssetClassificationGcpForwardingRule},
+	// {gcpinventory.CloudFunctionAssetType, inventory.AssetClassificationGcpCloudFunction},
+	// {gcpinventory.CloudRunService, inventory.AssetClassificationGcpCloudRunService},
+	// {gcpinventory.IamRoleAssetType, inventory.AssetClassificationGcpIamRole},
 }
 
 func newAssetsInventoryFetcher(logger *clog.Logger, provider inventoryProvider) inventory.AssetFetcher {
@@ -183,6 +183,7 @@ func hasResourceData(item *gcpinventory.ExtendedGcpAsset) bool {
 	return item.Resource != nil && item.Resource.Data != nil
 }
 
+// TODO: why aren't these showing? verified tags array is returning values
 func getAssetTags(item *gcpinventory.ExtendedGcpAsset) []string {
 	if !hasResourceData(item) {
 		return nil
@@ -257,10 +258,9 @@ var assetEnrichers = map[string]func(asset *inventory.AssetEvent, fields map[str
 	gcpinventory.CloudRunService:                enrichCloudRunService,
 }
 
-func enrichServiceAccount(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
-	asset.User = &inventory.User{
-		Email: getStringValue("email", fields),
-		Name:  getStringValue("displayName", fields),
+func enrichOrganization(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Organization = &inventory.Organization{
+		Name: getStringValue("displayName", fields),
 	}
 }
 
@@ -271,8 +271,30 @@ func enrichComputeInstance(asset *inventory.AssetEvent, fields map[string]*struc
 	asset.Cloud.AvailabilityZone = getStringValue("zone", fields)
 }
 
-func enrichForwardingRule(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
-	asset.Cloud.Region = getStringValue("region", fields)
+func enrichFirewall(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Network = &inventory.Network{
+		Name:      getStringValue("name", fields), // use "network" field?
+		Direction: getStringValue("direction", fields),
+	}
+	// TODO:
+	// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-transport
+	// asset.Network.Transport = allowed[].IPProtocol (example: icmp)
+	// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-iana-number
+	// asset.Network.IanaNumber = allowed[].IPProtocol -> https://pkg.go.dev/golang.org/x/net/internal/iana
+}
+
+func enrichSubnetwork(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Network = &inventory.Network{
+		Name: getStringValue("name", fields),
+		Type: strings.ToLower(getStringValue("stackType", fields)),
+	}
+}
+
+func enrichServiceAccount(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.User = &inventory.User{
+		Email: getStringValue("email", fields),
+		Name:  getStringValue("displayName", fields),
+	}
 }
 
 func enrichGkeCluster(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
@@ -281,6 +303,10 @@ func enrichGkeCluster(asset *inventory.AssetEvent, fields map[string]*structpb.V
 		ClusterName: getStringValue("name", fields),
 		ClusterID:   getStringValue("id", fields),
 	}
+}
+
+func enrichForwardingRule(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Cloud.Region = getStringValue("region", fields)
 }
 
 func enrichCloudFunction(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
@@ -323,31 +349,6 @@ func enrichCloudRunService(asset *inventory.AssetEvent, fields map[string]*struc
 
 	// 	}
 	// }
-}
-
-func enrichOrganization(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
-	asset.Organization = &inventory.Organization{
-		Name: getStringValue("displayName", fields),
-	}
-}
-
-func enrichSubnetwork(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
-	asset.Network = &inventory.Network{
-		Name: getStringValue("name", fields),
-		Type: strings.ToLower(getStringValue("stackType", fields)),
-	}
-}
-
-func enrichFirewall(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
-	asset.Network = &inventory.Network{
-		Name:      getStringValue("name", fields), // use "network" field?
-		Direction: getStringValue("direction", fields),
-	}
-	// TODO:
-	// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-transport
-	// asset.Network.Transport = allowed[].IPProtocol (example: icmp)
-	// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-iana-number
-	// asset.Network.IanaNumber = allowed[].IPProtocol -> https://pkg.go.dev/golang.org/x/net/internal/iana
 }
 
 func noopEnricher(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {}
