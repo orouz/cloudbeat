@@ -109,141 +109,6 @@ func (f *assetsInventory) fetch(ctx context.Context, assetChan chan<- inventory.
 	}
 }
 
-func getAssetTags(item *gcpinventory.ExtendedGcpAsset) []string {
-	if item.Resource == nil && item.Resource.Data == nil {
-		return nil
-	}
-	fields := item.GetResource().GetData().GetFields()
-	if tagsObj, ok := fields["tags"]; ok {
-		if items, ok := tagsObj.GetStructValue().GetFields()["items"]; ok {
-			tags := items.GetListValue().GetValues()
-			var t []string
-			for _, tag := range tags {
-				t = append(t, tag.GetStringValue())
-			}
-			return t
-		}
-	}
-	return nil
-}
-
-func getAssetLabels(item *gcpinventory.ExtendedGcpAsset) map[string]string {
-	if item.Resource == nil && item.Resource.Data == nil {
-		return nil
-	}
-	fields := item.GetResource().GetData().GetFields()
-	if value, ok := fields["labels"]; ok {
-		convertedMap := make(map[string]string)
-		if err := mapstructure.Decode(value.GetStructValue().AsMap(), &convertedMap); err != nil {
-			return nil
-		}
-		return convertedMap
-	}
-	return nil
-}
-
-func enrichAsset(asset *inventory.AssetEvent, item *gcpinventory.ExtendedGcpAsset) {
-	if item.Resource == nil && item.Resource.Data == nil {
-		return
-	}
-	fields := item.GetResource().GetData().GetFields()
-	getStringValue := func(key string, f map[string]*structpb.Value) string {
-		if value, ok := f[key]; ok {
-			return value.GetStringValue()
-		}
-		return ""
-	}
-
-	switch item.AssetType {
-	case gcpinventory.IamRoleAssetType:
-		// TODO: Cloud, Entity, User, Labels (if tags/labels are available)
-		// TODO: what user values? https://cloud.google.com/iam/docs/reference/rest/v1/roles
-
-	case gcpinventory.IamServiceAccountKeyAssetType:
-		// TODO: Cloud, Entity, User (the SA key is for), Labels (if tags/labels are available)
-		// TODO: what user values? https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts.keys
-
-	case gcpinventory.IamServiceAccountAssetType:
-		// TODO: Cloud, Entity, User, Labels (if tags/labels are available)
-		asset.User = &inventory.User{
-			Email: getStringValue("email", fields),
-			Name:  getStringValue("displayName", fields),
-		}
-
-	case gcpinventory.ComputeInstanceAssetType:
-		// TODO: Cloud, Entity, Host, Labels (if tags/labels are available)
-		// https://cloud.google.com/compute/docs/reference/rest/v1/instances#resource:-instance
-		asset.Cloud.InstanceID = getStringValue("id", fields)
-		asset.Cloud.InstanceName = getStringValue("name", fields)
-		asset.Cloud.MachineType = getStringValue("machineType", fields)
-		asset.Cloud.AvailabilityZone = getStringValue("zone", fields)
-
-	case gcpinventory.GkeClusterAssetType:
-		// TODO: Cloud, Entity, Orchastrator, Labels (if tags/labels are available)
-		asset.Orchestrator = &inventory.Orchestrator{
-			Type:        "kubernetes",
-			ClusterName: getStringValue("name", fields),
-			ClusterID:   getStringValue("id", fields),
-		}
-	case gcpinventory.CloudRunService:
-		// TODO: Cloud, Entity, Container, Labels (if tags/labels are available)
-		container := &inventory.Container{}
-		// if metadata, ok := fields["metadata"]; ok {
-		// 	metadataFields := metadata.GetStructValue().GetFields()
-		// 	container.Name = getStringValue("name", metadataFields)
-		// 	container.ID=  getStringValue("uid", metadataFields)
-		// }
-
-		if spec, ok := fields["spec"]; ok {
-			specFields := spec.GetStructValue().GetFields()
-			if containers, ok := specFields["containers"]; ok {
-				for _, containerValue := range containers.GetListValue().GetValues() {
-					containerFields := containerValue.GetStructValue().GetFields()
-					container.ImageName = getStringValue("image", containerFields)
-				}
-			}
-		}
-
-		asset.Container = container
-
-	case gcpinventory.CrmOrgAssetType:
-		// TODO: Cloud, Entity, Organization, Labels (if tags/labels are available)
-	case gcpinventory.CrmProjectAssetType:
-		// TODO: Cloud, Entity, Labels (if tags/labels are available)
-	case gcpinventory.CrmFolderAssetType:
-		// TODO: Cloud, Entity, Organization, Labels (if tags/labels are available)
-	case gcpinventory.ComputeFirewallAssetType:
-		// TODO: Cloud, Entity, Labels (if tags/labels are available)
-		// https://cloud.google.com/compute/docs/reference/rest/v1/firewalls#resource:-firewall
-		asset.Network = &inventory.Network{
-			Name:      getStringValue("name", fields), // use "network" field?
-			Direction: getStringValue("direction", fields),
-		}
-		// TODO:
-		// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-transport
-		// asset.Network.Transport = allowed[].IPProtocol (example: icmp)
-		// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-iana-number
-		// asset.Network.IanaNumber = allowed[].IPProtocol -> https://pkg.go.dev/golang.org/x/net/internal/iana
-	case gcpinventory.ComputeForwardingRuleAssetType:
-		// TODO: Cloud, Entity, Labels (if tags/labels are available)
-	case
-		// TODO: Cloud, Entity, Labels (if tags/labels are available)
-		// https://cloud.google.com/compute/docs/reference/rest/v1/subnetworks#resource:-subnetwork
-		gcpinventory.ComputeSubnetworkAssetType:
-		asset.Network = &inventory.Network{
-			Name: getStringValue("name", fields),
-			Type: strings.ToLower(getStringValue("stackType", fields)),
-		}
-	case gcpinventory.CloudFunctionAssetType:
-		// TODO: Cloud, Entity, FaaS, Labels (if tags/labels are available)
-	case
-		// TODO: Cloud, Entity, Labels (if tags/labels are available)
-		// https://cloud.google.com/storage/docs/json_api/v1/buckets#resource-representations
-		gcpinventory.StorageBucketAssetType:
-	}
-
-}
-
 func (f *assetsInventory) findRelatedAssetIds(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
 	ids := []string{}
 	ids = append(ids, item.Ancestors...)
@@ -312,4 +177,184 @@ func appendIfExists(slice []string, fields map[string]*structpb.Value, key strin
 		return slice
 	}
 	return append(slice, value.GetStringValue())
+}
+
+func hasResourceData(item *gcpinventory.ExtendedGcpAsset) bool {
+	return item.Resource != nil && item.Resource.Data != nil
+}
+
+func getAssetTags(item *gcpinventory.ExtendedGcpAsset) []string {
+	if !hasResourceData(item) {
+		return nil
+	}
+
+	tagsObj, ok := item.GetResource().GetData().GetFields()["tags"]
+	if !ok {
+		return nil
+	}
+
+	structValue := tagsObj.GetStructValue()
+	if structValue == nil {
+		return nil
+	}
+
+	items, ok := structValue.GetFields()["items"]
+	if !ok {
+		return nil
+	}
+
+	tagValues := items.GetListValue().GetValues()
+	tags := make([]string, len(tagValues))
+	for i, tag := range tagValues {
+		tags[i] = tag.GetStringValue()
+	}
+
+	return tags
+}
+
+func getAssetLabels(item *gcpinventory.ExtendedGcpAsset) map[string]string {
+	if !hasResourceData(item) {
+		return nil
+	}
+
+	labels, ok := item.GetResource().GetData().GetFields()["labels"]
+	if !ok {
+		return nil
+	}
+
+	labelsMap := make(map[string]string)
+	if err := mapstructure.Decode(labels.GetStructValue().AsMap(), &labelsMap); err != nil {
+		return nil
+	}
+
+	return labelsMap
+}
+
+func enrichAsset(asset *inventory.AssetEvent, item *gcpinventory.ExtendedGcpAsset) {
+	if !hasResourceData(item) {
+		return
+	}
+	fields := item.GetResource().GetData().GetFields()
+	if enricher, ok := assetEnrichers[item.AssetType]; ok {
+		enricher(asset, fields)
+	}
+}
+
+var assetEnrichers = map[string]func(asset *inventory.AssetEvent, fields map[string]*structpb.Value){
+	gcpinventory.IamRoleAssetType:               noopEnricher,
+	gcpinventory.CrmFolderAssetType:             noopEnricher,
+	gcpinventory.CrmProjectAssetType:            noopEnricher,
+	gcpinventory.StorageBucketAssetType:         noopEnricher,
+	gcpinventory.IamServiceAccountKeyAssetType:  noopEnricher,
+	gcpinventory.CrmOrgAssetType:                enrichOrganization,
+	gcpinventory.ComputeInstanceAssetType:       enrichComputeInstance,
+	gcpinventory.ComputeFirewallAssetType:       enrichFirewall,
+	gcpinventory.ComputeSubnetworkAssetType:     enrichSubnetwork,
+	gcpinventory.IamServiceAccountAssetType:     enrichServiceAccount,
+	gcpinventory.GkeClusterAssetType:            enrichGkeCluster,
+	gcpinventory.ComputeForwardingRuleAssetType: enrichForwardingRule,
+	gcpinventory.CloudFunctionAssetType:         enrichCloudFunction,
+	gcpinventory.CloudRunService:                enrichCloudRunService,
+}
+
+func enrichServiceAccount(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.User = &inventory.User{
+		Email: getStringValue("email", fields),
+		Name:  getStringValue("displayName", fields),
+	}
+}
+
+func enrichComputeInstance(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Cloud.InstanceID = getStringValue("id", fields)
+	asset.Cloud.InstanceName = getStringValue("name", fields)
+	asset.Cloud.MachineType = getStringValue("machineType", fields)
+	asset.Cloud.AvailabilityZone = getStringValue("zone", fields)
+}
+
+func enrichForwardingRule(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Cloud.Region = getStringValue("region", fields)
+}
+
+func enrichGkeCluster(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Orchestrator = &inventory.Orchestrator{
+		Type:        "kubernetes",
+		ClusterName: getStringValue("name", fields),
+		ClusterID:   getStringValue("id", fields),
+	}
+}
+
+func enrichCloudFunction(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.URL = &inventory.URL{
+		Full: getStringValue("url", fields),
+	}
+	asset.Fass = &inventory.Fass{
+		Name: getStringValue("name", fields),
+	}
+	if serviceConfig, ok := fields["serviceConfig"]; ok {
+		serviceConfigFields := serviceConfig.GetStructValue().GetFields()
+		asset.Fass.Version = getStringValue("revision", serviceConfigFields)
+	}
+}
+
+func enrichCloudRunService(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Container = &inventory.Container{}
+	// if metadata, ok := fields["metadata"]; ok {
+	// 	metadataFields := metadata.GetStructValue().GetFields()
+	// 	container.Name = getStringValue("name", metadataFields)
+	// 	container.ID=  getStringValue("uid", metadataFields)
+	// }
+	// resource.data.spec.template.spec.containers.image
+	// if spec, ok := fields["spec"]; ok {
+	// 	specFields := spec.GetStructValue().GetFields()
+	// 	if template, ok := specFields["template"]; ok {
+	// 		templateFields := template.GetStructValue().GetFields()
+	// 		if spec2, ok := templateFields["spec"]; ok {
+	// 			specFields2 := spec2.GetStructValue().GetFields()
+	// 			var imageNames []string
+	// 			if containers, ok := specFields2["containers"]; ok {
+	// 				for _, containerValue := range containers.GetListValue().GetValues() {
+	// 					containerFields := containerValue.GetStructValue().GetFields()
+	// 					imageNames = append(imageNames, getStringValue("image", containerFields))
+
+	// 				}
+	// 			}
+	// 			container.ImageName = imageNames
+	// 		}
+
+	// 	}
+	// }
+}
+
+func enrichOrganization(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Organization = &inventory.Organization{
+		Name: getStringValue("displayName", fields),
+	}
+}
+
+func enrichSubnetwork(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Network = &inventory.Network{
+		Name: getStringValue("name", fields),
+		Type: strings.ToLower(getStringValue("stackType", fields)),
+	}
+}
+
+func enrichFirewall(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
+	asset.Network = &inventory.Network{
+		Name:      getStringValue("name", fields), // use "network" field?
+		Direction: getStringValue("direction", fields),
+	}
+	// TODO:
+	// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-transport
+	// asset.Network.Transport = allowed[].IPProtocol (example: icmp)
+	// https://www.elastic.co/guide/en/ecs/current/ecs-network.html#field-network-iana-number
+	// asset.Network.IanaNumber = allowed[].IPProtocol -> https://pkg.go.dev/golang.org/x/net/internal/iana
+}
+
+func noopEnricher(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {}
+
+func getStringValue(key string, f map[string]*structpb.Value) string {
+	if value, ok := f[key]; ok {
+		return value.GetStringValue()
+	}
+	return ""
 }

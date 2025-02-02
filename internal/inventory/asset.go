@@ -139,7 +139,10 @@ type AssetEvent struct {
 	Entity        Entity
 	Event         Event
 	Network       *Network
+	URL           *URL
+	Organization  *Organization
 	Cloud         *Cloud
+	Fass          *Fass
 	Orchestrator  *Orchestrator
 	Container     *Container
 	Host          *Host
@@ -147,6 +150,20 @@ type AssetEvent struct {
 	Labels        map[string]string
 	Tags          []string
 	RawAttributes *any
+}
+
+type Organization struct {
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+type Fass struct {
+	Name    string `json:"name,omitempty"`
+	Version string `json:"version,omitempty"`
+}
+
+type URL struct {
+	Full string `json:"full"`
 }
 
 // Entity contains the identifiers of the asset
