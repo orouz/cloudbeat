@@ -220,41 +220,27 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 				OrganizationName: "<org name>",
 			},
 		}
-
-		actual := inventory.NewAssetEvent(
-			r.classification,
-			gcpAsset.Name,
-			gcpAsset.Name,
-			inventory.WithRawAsset(gcpAsset),
-			inventory.WithRelatedAssetIds([]string{}),
-			inventory.WithCloud(inventory.Cloud{
-				Provider:    inventory.GcpCloudProvider,
-				AccountID:   gcpAsset.CloudAccount.AccountId,
-				AccountName: gcpAsset.CloudAccount.AccountName,
-				ProjectID:   gcpAsset.CloudAccount.OrganisationId,
-				ProjectName: gcpAsset.CloudAccount.OrganizationName,
-				ServiceName: r.assetType,
-			}))
-
+		actual := getAssetEvent(r.assetType, r.classification, gcpAsset)
 		expected := item.enrichments
-		expected.Event = actual.Event                 // Event is not set in the enrichments
-		expected.Entity = actual.Entity               // Entity is not set in the enrichments
-		expected.RawAttributes = actual.RawAttributes // RawAttributes is not set in the enrichments
 
-		// When there are no cloud fields enrichments, use the actual cloud fields
+		// Set the common fields that are not set in the enrichments
+		expected.Event = actual.Event
+		expected.Entity = actual.Entity
+		expected.RawAttributes = actual.RawAttributes
+
+		// Cloud is the only field where we have both common and enriched fields
 		if expected.Cloud == nil {
+			// Use the actual cloud fields when there are no cloud enrichments
 			expected.Cloud = actual.Cloud
+		} else {
+			// Use common cloud fields when there are cloud enrichments
+			expected.Cloud.Provider = actual.Cloud.Provider
+			expected.Cloud.AccountID = actual.Cloud.AccountID
+			expected.Cloud.AccountName = actual.Cloud.AccountName
+			expected.Cloud.ProjectID = actual.Cloud.ProjectID
+			expected.Cloud.ProjectName = actual.Cloud.ProjectName
+			expected.Cloud.ServiceName = actual.Cloud.ServiceName
 		}
-
-		enrichAsset(&actual, gcpAsset)
-
-		// Add or safely override common cloud fields not set in the enrichments
-		expected.Cloud.Provider = actual.Cloud.Provider
-		expected.Cloud.AccountID = actual.Cloud.AccountID
-		expected.Cloud.AccountName = actual.Cloud.AccountName
-		expected.Cloud.ProjectID = actual.Cloud.ProjectID
-		expected.Cloud.ProjectName = actual.Cloud.ProjectName
-		expected.Cloud.ServiceName = actual.Cloud.ServiceName
 
 		assert.Equalf(t, expected, actual, "%v failed", "EnrichAsset")
 	}

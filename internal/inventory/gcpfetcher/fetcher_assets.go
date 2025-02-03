@@ -85,45 +85,50 @@ func (f *assetsInventory) fetch(ctx context.Context, assetChan chan<- inventory.
 	}
 
 	for _, item := range gcpAssets {
-		asset := inventory.NewAssetEvent(
-			classification,
-			item.Name,
-			item.Name,
-			inventory.WithRawAsset(item),
-			inventory.WithRelatedAssetIds(
-				f.findRelatedAssetIds(classification.Type, item),
-			),
-			inventory.WithCloud(inventory.Cloud{
-				Provider:    inventory.GcpCloudProvider,
-				AccountID:   item.CloudAccount.AccountId,
-				AccountName: item.CloudAccount.AccountName,
-				ProjectID:   item.CloudAccount.OrganisationId,
-				ProjectName: item.CloudAccount.OrganizationName,
-				ServiceName: assetType,
-			}),
-			inventory.WithLabels(getAssetLabels(item)),
-			inventory.WithTags(getAssetTags(item)),
-		)
-		enrichAsset(&asset, item)
+		asset := getAssetEvent(assetType, classification, item)
 		assetChan <- asset
 	}
 }
 
-func (f *assetsInventory) findRelatedAssetIds(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
+func getAssetEvent(assetType string, classification inventory.AssetClassification, item *gcpinventory.ExtendedGcpAsset) inventory.AssetEvent {
+	asset := inventory.NewAssetEvent(
+		classification,
+		item.Name,
+		item.Name,
+		inventory.WithRawAsset(item),
+		inventory.WithRelatedAssetIds(
+			findRelatedAssetIds(classification.Type, item),
+		),
+		inventory.WithCloud(inventory.Cloud{
+			Provider:    inventory.GcpCloudProvider,
+			AccountID:   item.CloudAccount.AccountId,
+			AccountName: item.CloudAccount.AccountName,
+			ProjectID:   item.CloudAccount.OrganisationId,
+			ProjectName: item.CloudAccount.OrganizationName,
+			ServiceName: assetType,
+		}),
+		inventory.WithLabels(getAssetLabels(item)),
+		inventory.WithTags(getAssetTags(item)),
+	)
+	enrichAsset(&asset, item)
+	return asset
+}
+
+func findRelatedAssetIds(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
 	ids := []string{}
 	ids = append(ids, item.Ancestors...)
 	if item.Resource != nil {
 		ids = append(ids, item.Resource.Parent)
 	}
 
-	ids = append(ids, f.findRelatedAssetIdsForType(t, item)...)
+	ids = append(ids, findRelatedAssetIdsForType(t, item)...)
 
 	ids = lo.Compact(ids)
 	ids = lo.Uniq(ids)
 	return ids
 }
 
-func (f *assetsInventory) findRelatedAssetIdsForType(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
+func findRelatedAssetIdsForType(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
 	ids := []string{}
 
 	var fields map[string]*structpb.Value
