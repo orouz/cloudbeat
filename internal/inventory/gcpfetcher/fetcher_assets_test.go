@@ -75,17 +75,26 @@ func TestAccountFetcher_Fetch_Assets(t *testing.T) {
 
 func TestAccountFetcher_EnrichAsset(t *testing.T) {
 	var data = map[string]struct {
-		resource    *assetpb.Resource
-		enrichments inventory.AssetEvent
+		resource    *assetpb.Resource    // input of GCP asset resource data
+		enrichments inventory.AssetEvent // output of inventory asset ECS fields
 	}{
-		gcpinventory.IamRoleAssetType:              {},
-		gcpinventory.CrmFolderAssetType:            {},
-		gcpinventory.CrmProjectAssetType:           {},
+		gcpinventory.IamRoleAssetType:   {},
+		gcpinventory.CrmFolderAssetType: {},
+		gcpinventory.CrmProjectAssetType: {
+			resource: &assetpb.Resource{
+				Data: NewStructMap(map[string]any{
+					"labels": map[string]any{"org": "security"},
+				}),
+			},
+			enrichments: inventory.AssetEvent{
+				Labels: map[string]string{"org": "security"},
+			},
+		},
 		gcpinventory.StorageBucketAssetType:        {},
 		gcpinventory.IamServiceAccountKeyAssetType: {},
 		gcpinventory.CrmOrgAssetType: {
 			resource: &assetpb.Resource{
-				Data: NewStructMap(map[string]interface{}{
+				Data: NewStructMap(map[string]any{
 					"displayName": "org",
 				}),
 			},
@@ -97,11 +106,12 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 		},
 		gcpinventory.ComputeInstanceAssetType: {
 			resource: &assetpb.Resource{
-				Data: NewStructMap(map[string]interface{}{
+				Data: NewStructMap(map[string]any{
 					"id":          "id",
 					"name":        "name",
 					"machineType": "machineType",
 					"zone":        "zone",
+					"labels":      map[string]any{"key": "value"},
 				}),
 			},
 			enrichments: inventory.AssetEvent{
@@ -111,11 +121,12 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 					MachineType:      "machineType",
 					AvailabilityZone: "zone",
 				},
+				Labels: map[string]string{"key": "value"},
 			},
 		},
 		gcpinventory.ComputeFirewallAssetType: {
 			resource: &assetpb.Resource{
-				Data: NewStructMap(map[string]interface{}{
+				Data: NewStructMap(map[string]any{
 					"direction": "INGRESS",
 					"name":      "default-allow-ssh",
 				}),
@@ -129,7 +140,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 		},
 		gcpinventory.ComputeSubnetworkAssetType: {
 			resource: &assetpb.Resource{
-				Data: NewStructMap(map[string]interface{}{
+				Data: NewStructMap(map[string]any{
 					"name":      "subnetwork",
 					"stackType": "IPV4_ONLY",
 				}),
@@ -143,7 +154,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 		},
 		gcpinventory.IamServiceAccountAssetType: {
 			resource: &assetpb.Resource{
-				Data: NewStructMap(map[string]interface{}{
+				Data: NewStructMap(map[string]any{
 					"displayName": "service-account",
 					"email":       "service-account@<project UUID>.iam.gserviceaccount.com",
 				}),
@@ -157,7 +168,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 		},
 		gcpinventory.GkeClusterAssetType: {
 			resource: &assetpb.Resource{
-				Data: NewStructMap(map[string]interface{}{
+				Data: NewStructMap(map[string]any{
 					"name": "cluster",
 					"id":   "cluster-id",
 				}),
@@ -172,7 +183,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 		},
 		gcpinventory.ComputeForwardingRuleAssetType: {
 			resource: &assetpb.Resource{
-				Data: NewStructMap(map[string]interface{}{
+				Data: NewStructMap(map[string]any{
 					"region": "region1",
 				}),
 			},
@@ -184,7 +195,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 		},
 		gcpinventory.CloudFunctionAssetType: {
 			resource: &assetpb.Resource{
-				Data: NewStructMap(map[string]interface{}{
+				Data: NewStructMap(map[string]any{
 					"name": "cloud-function",
 					"url":  "https://cloud-function.com",
 				}),

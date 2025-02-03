@@ -188,7 +188,6 @@ func hasResourceData(item *gcpinventory.ExtendedGcpAsset) bool {
 	return item.Resource != nil && item.Resource.Data != nil
 }
 
-// TODO: why aren't these showing? verified tags array is returning values
 func getAssetTags(item *gcpinventory.ExtendedGcpAsset) []string {
 	if !hasResourceData(item) {
 		return nil
