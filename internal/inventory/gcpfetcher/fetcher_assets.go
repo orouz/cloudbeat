@@ -47,18 +47,18 @@ type (
 var ResourcesToFetch = []ResourcesClassification{
 	{gcpinventory.CrmOrgAssetType, inventory.AssetClassificationGcpOrganization},
 	{gcpinventory.CrmFolderAssetType, inventory.AssetClassificationGcpFolder},
-	// {gcpinventory.CrmProjectAssetType, inventory.AssetClassificationGcpProject},
-	// {gcpinventory.ComputeInstanceAssetType, inventory.AssetClassificationGcpInstance},
-	// {gcpinventory.ComputeFirewallAssetType, inventory.AssetClassificationGcpFirewall},
-	// {gcpinventory.StorageBucketAssetType, inventory.AssetClassificationGcpBucket},
-	// {gcpinventory.ComputeSubnetworkAssetType, inventory.AssetClassificationGcpSubnet},
-	// {gcpinventory.IamServiceAccountAssetType, inventory.AssetClassificationGcpServiceAccount},
-	// {gcpinventory.IamServiceAccountKeyAssetType, inventory.AssetClassificationGcpServiceAccountKey},
-	// {gcpinventory.GkeClusterAssetType, inventory.AssetClassificationGcpGkeCluster},
-	// {gcpinventory.ComputeForwardingRuleAssetType, inventory.AssetClassificationGcpForwardingRule},
-	// {gcpinventory.CloudFunctionAssetType, inventory.AssetClassificationGcpCloudFunction},
-	// {gcpinventory.CloudRunService, inventory.AssetClassificationGcpCloudRunService},
-	// {gcpinventory.IamRoleAssetType, inventory.AssetClassificationGcpIamRole},
+	{gcpinventory.CrmProjectAssetType, inventory.AssetClassificationGcpProject},
+	{gcpinventory.ComputeInstanceAssetType, inventory.AssetClassificationGcpInstance},
+	{gcpinventory.ComputeFirewallAssetType, inventory.AssetClassificationGcpFirewall},
+	{gcpinventory.StorageBucketAssetType, inventory.AssetClassificationGcpBucket},
+	{gcpinventory.ComputeSubnetworkAssetType, inventory.AssetClassificationGcpSubnet},
+	{gcpinventory.IamServiceAccountAssetType, inventory.AssetClassificationGcpServiceAccount},
+	{gcpinventory.IamServiceAccountKeyAssetType, inventory.AssetClassificationGcpServiceAccountKey},
+	{gcpinventory.GkeClusterAssetType, inventory.AssetClassificationGcpGkeCluster},
+	{gcpinventory.ComputeForwardingRuleAssetType, inventory.AssetClassificationGcpForwardingRule},
+	{gcpinventory.CloudFunctionAssetType, inventory.AssetClassificationGcpCloudFunction},
+	{gcpinventory.CloudRunService, inventory.AssetClassificationGcpCloudRunService},
+	{gcpinventory.IamRoleAssetType, inventory.AssetClassificationGcpIamRole},
 }
 
 func newAssetsInventoryFetcher(logger *clog.Logger, provider inventoryProvider) inventory.AssetFetcher {
@@ -323,7 +323,7 @@ func enrichCloudFunction(asset *inventory.AssetEvent, fields map[string]*structp
 }
 
 func enrichCloudRunService(asset *inventory.AssetEvent, fields map[string]*structpb.Value) {
-	asset.Container = &inventory.Container{}
+	// asset.Container = &inventory.Container{}
 	// if metadata, ok := fields["metadata"]; ok {
 	// 	metadataFields := metadata.GetStructValue().GetFields()
 	// 	container.Name = getStringValue("name", metadataFields)
