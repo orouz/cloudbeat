@@ -189,9 +189,9 @@ type Event struct {
 }
 
 type Network struct {
-	Name      string `json:"name,omitempty"`
-	Direction string `json:"direction,omitempty"`
-	Type      string `json:"type,omitempty"`
+	Name      []string `json:"name,omitempty"`
+	Direction string   `json:"direction,omitempty"`
+	Type      string   `json:"type,omitempty"`
 }
 
 type Cloud struct {
@@ -237,9 +237,9 @@ type Orchestrator struct {
 }
 
 type Container struct {
-	ID        string `json:"id,omitempty"`
-	Name      string `json:"name,omitempty"`
-	ImageName string `json:"image.name,omitempty"`
+	ID        string   `json:"id,omitempty"`
+	Name      []string `json:"name,omitempty"`
+	ImageName []string `json:"image.name,omitempty"`
 }
 
 // AssetEnricher functional builder function
