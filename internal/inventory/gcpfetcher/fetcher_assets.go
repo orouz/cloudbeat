@@ -111,9 +111,8 @@ func getAssetEvent(classification inventory.AssetClassification, item *gcpinvent
 
 	// Asset type specific enrichers
 	if hasResourceData(item) {
-		fields := item.GetResource().GetData().GetFields()
 		if enricher, ok := assetEnrichers[item.AssetType]; ok {
-			enrichers = append(enrichers, enricher(item, fields)...)
+			enrichers = append(enrichers, enricher(item, item.GetResource().GetData())...)
 		}
 	}
 
@@ -246,13 +245,13 @@ func getAssetLabels(item *gcpinventory.ExtendedGcpAsset) map[string]string {
 	return labelsMap
 }
 
-var assetEnrichers = map[string]func(item *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher{
+var assetEnrichers = map[string]func(item *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher{
 	gcpinventory.IamRoleAssetType:               noopEnricher,
 	gcpinventory.CrmFolderAssetType:             noopEnricher,
 	gcpinventory.CrmProjectAssetType:            noopEnricher,
 	gcpinventory.StorageBucketAssetType:         noopEnricher,
 	gcpinventory.IamServiceAccountKeyAssetType:  noopEnricher,
-	gcpinventory.CloudRunService:                noopEnricher,
+	gcpinventory.CloudRunService:                enrichCloudRunService,
 	gcpinventory.CrmOrgAssetType:                enrichOrganization,
 	gcpinventory.ComputeInstanceAssetType:       enrichComputeInstance,
 	gcpinventory.ComputeFirewallAssetType:       enrichFirewall,
@@ -263,104 +262,138 @@ var assetEnrichers = map[string]func(item *gcpinventory.ExtendedGcpAsset, fields
 	gcpinventory.CloudFunctionAssetType:         enrichCloudFunction,
 }
 
-func enrichOrganization(_ *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher {
+func enrichOrganization(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithOrganization(inventory.Organization{
-			Name: getStringValue("displayName", fields),
+			Name: first(getPathValues([]string{"displayName"}, pb)),
 		}),
 	}
 }
 
-func enrichComputeInstance(item *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher {
+func enrichComputeInstance(item *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithCloud(inventory.Cloud{
-			// This will override the default Cloud fields, so we re-add the common ones
+			// This will override the default Cloud pb, so we re-add the common ones
 			Provider:         inventory.GcpCloudProvider,
 			AccountID:        item.CloudAccount.AccountId,
 			AccountName:      item.CloudAccount.AccountName,
 			ProjectID:        item.CloudAccount.OrganisationId,
 			ProjectName:      item.CloudAccount.OrganizationName,
 			ServiceName:      item.AssetType,
-			InstanceID:       getStringValue("id", fields),
-			InstanceName:     getStringValue("name", fields),
-			MachineType:      getStringValue("machineType", fields),
-			AvailabilityZone: getStringValue("zone", fields),
+			InstanceID:       first(getPathValues([]string{"id"}, pb)),
+			InstanceName:     first(getPathValues([]string{"name"}, pb)),
+			MachineType:      first(getPathValues([]string{"machineType"}, pb)),
+			AvailabilityZone: first(getPathValues([]string{"zone"}, pb)),
 		}),
 		inventory.WithHost(inventory.Host{
-			ID: getStringValue("id", fields),
+			ID: first(getPathValues([]string{"id"}, pb)),
+		}),
+		inventory.WithNetwork(inventory.Network{
+			Name: getPathValues([]string{"networkInterfaces", "name"}, pb),
 		}),
 	}
 }
 
-func enrichFirewall(_ *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher {
+func enrichFirewall(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithNetwork(inventory.Network{
-			Name:      getStringValue("name", fields),
-			Direction: getStringValue("direction", fields),
+			Name:      getPathValues([]string{"name"}, pb),
+			Direction: first(getPathValues([]string{"direction"}, pb)),
 		}),
 	}
 }
 
-func enrichSubnetwork(_ *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher {
+func enrichSubnetwork(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithNetwork(inventory.Network{
-			Name: getStringValue("name", fields),
-			Type: strings.ToLower(getStringValue("stackType", fields)),
+			Name: getPathValues([]string{"name"}, pb),
+			Type: strings.ToLower(first(getPathValues([]string{"stackType"}, pb))),
 		}),
 	}
 }
 
-func enrichServiceAccount(_ *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher {
+func enrichServiceAccount(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithUser(inventory.User{
-			Email: getStringValue("email", fields),
-			Name:  getStringValue("displayName", fields),
+			Email: first(getPathValues([]string{"email"}, pb)),
+			Name:  first(getPathValues([]string{"displayName"}, pb)),
 		}),
 	}
 }
 
-func enrichGkeCluster(_ *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher {
+func enrichGkeCluster(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithOrchestrator(inventory.Orchestrator{
 			Type:        "kubernetes",
-			ClusterName: getStringValue("name", fields),
-			ClusterID:   getStringValue("id", fields),
+			ClusterName: first(getPathValues([]string{"name"}, pb)),
+			ClusterID:   first(getPathValues([]string{"id"}, pb)),
 		}),
 	}
 }
 
-func enrichForwardingRule(_ *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher {
+func enrichForwardingRule(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithCloud(inventory.Cloud{
-			Region: getStringValue("region", fields),
+			Region: first(getPathValues([]string{"region"}, pb)),
 		}),
 	}
 }
 
-func enrichCloudFunction(_ *gcpinventory.ExtendedGcpAsset, fields map[string]*structpb.Value) []inventory.AssetEnricher {
-	var revision string
-	if serviceConfig, ok := fields["serviceConfig"]; ok {
-		serviceConfigFields := serviceConfig.GetStructValue().GetFields()
-		revision = getStringValue("revision", serviceConfigFields)
-	}
+func enrichCloudFunction(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithURL(inventory.URL{
-			Full: getStringValue("url", fields),
+			Full: first(getPathValues([]string{"url"}, pb)),
 		}),
 		inventory.WithFass(inventory.Fass{
-			Name:    getStringValue("name", fields),
-			Version: revision,
+			Name:    first(getPathValues([]string{"name"}, pb)),
+			Version: first(getPathValues([]string{"serviceConfig", "revision"}, pb)),
 		}),
 	}
 }
 
-func noopEnricher(_ *gcpinventory.ExtendedGcpAsset, _ map[string]*structpb.Value) []inventory.AssetEnricher {
+func enrichCloudRunService(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+	return []inventory.AssetEnricher{
+		inventory.WithContainer(inventory.Container{
+			Name:      getPathValues([]string{"spec", "template", "spec", "containers", "name"}, pb),
+			ImageName: getPathValues([]string{"spec", "template", "spec", "containers", "image"}, pb),
+		}),
+	}
+}
+
+func noopEnricher(_ *gcpinventory.ExtendedGcpAsset, _ *structpb.Struct) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{}
 }
 
-func getStringValue(key string, f map[string]*structpb.Value) string {
-	if value, ok := f[key]; ok {
-		return value.GetStringValue()
+func getPathValues(keys []string, pb *structpb.Struct) []string {
+	m := pb.AsMap()
+
+	var values []string
+	var current interface{} = m
+
+	for _, key := range keys {
+		if subMap, ok := current.(map[string]interface{}); ok {
+			current = subMap[key]
+		} else {
+			return nil
+		}
 	}
-	return ""
+
+	switch v := current.(type) {
+	case []interface{}:
+		for _, item := range v {
+			if str, ok := item.(string); ok {
+				values = append(values, str)
+			}
+		}
+	case string:
+		values = append(values, v)
+	}
+	return values
+}
+
+func first(values []string) string {
+	if len(values) == 0 {
+		return ""
+	}
+	return values[0]
 }
