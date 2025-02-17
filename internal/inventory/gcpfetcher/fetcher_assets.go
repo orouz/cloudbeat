@@ -23,7 +23,6 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/samber/lo"
-	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/elastic/cloudbeat/internal/infra/clog"
 	"github.com/elastic/cloudbeat/internal/inventory"
@@ -112,7 +111,7 @@ func getAssetEvent(classification inventory.AssetClassification, item *gcpinvent
 	// Asset type specific enrichers
 	if hasResourceData(item) {
 		if enricher, ok := assetEnrichers[item.AssetType]; ok {
-			enrichers = append(enrichers, enricher(item, item.GetResource().GetData())...)
+			enrichers = append(enrichers, enricher(item, item.GetResource().GetData().AsMap())...)
 		}
 	}
 
@@ -139,38 +138,24 @@ func findRelatedAssetIds(t inventory.AssetType, item *gcpinventory.ExtendedGcpAs
 }
 
 func findRelatedAssetIdsForType(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
-	ids := []string{}
-
-	var fields map[string]*structpb.Value
-	if item.Resource != nil && item.Resource.Data != nil {
-		fields = item.GetResource().GetData().GetFields()
+	if !hasResourceData(item) {
+		return nil
 	}
+
+	ids := []string{}
+	pb := item.GetResource().GetData()
 
 	switch t {
 	case inventory.AssetClassificationGcpInstance.Type:
-		if v, ok := fields["networkInterfaces"]; ok {
-			for _, networkInterface := range v.GetListValue().GetValues() {
-				networkInterfaceFields := networkInterface.GetStructValue().GetFields()
-				ids = appendIfExists(ids, networkInterfaceFields, "network")
-				ids = appendIfExists(ids, networkInterfaceFields, "subnetwork")
-			}
-		}
-		if v, ok := fields["serviceAccounts"]; ok {
-			for _, serviceAccount := range v.GetListValue().GetValues() {
-				serviceAccountFields := serviceAccount.GetStructValue().GetFields()
-				ids = appendIfExists(ids, serviceAccountFields, "email")
-			}
-		}
-		if v, ok := fields["disks"]; ok {
-			for _, disk := range v.GetListValue().GetValues() {
-				diskFields := disk.GetStructValue().GetFields()
-				ids = appendIfExists(ids, diskFields, "source")
-			}
-		}
-		ids = appendIfExists(ids, fields, "machineType")
-		ids = appendIfExists(ids, fields, "zone")
+		ids = append(ids, values([]string{"networkInterfaces", "network"}, pb)...)
+		ids = append(ids, values([]string{"networkInterfaces", "subnetwork"}, pb)...)
+		ids = append(ids, values([]string{"serviceAccounts", "email"}, pb)...)
+		ids = append(ids, values([]string{"disks", "source"}, pb)...)
+		ids = append(ids, values([]string{"machineType"}, pb)...)
+		ids = append(ids, values([]string{"zone"}, pb)...)
+
 	case inventory.AssetClassificationGcpFirewall.Type, inventory.AssetClassificationGcpSubnet.Type:
-		ids = appendIfExists(ids, fields, "network")
+		ids = append(ids, values([]string{"network"}, pb)...)
 	case inventory.AssetClassificationGcpProject.Type, inventory.AssetClassificationGcpBucket.Type:
 		if item.IamPolicy == nil {
 			break
@@ -186,14 +171,6 @@ func findRelatedAssetIdsForType(t inventory.AssetType, item *gcpinventory.Extend
 	return ids
 }
 
-func appendIfExists(slice []string, fields map[string]*structpb.Value, key string) []string {
-	value, ok := fields[key]
-	if !ok {
-		return slice
-	}
-	return append(slice, value.GetStringValue())
-}
-
 func hasResourceData(item *gcpinventory.ExtendedGcpAsset) bool {
 	return item.Resource != nil && item.Resource.Data != nil
 }
@@ -203,28 +180,7 @@ func getAssetTags(item *gcpinventory.ExtendedGcpAsset) []string {
 		return nil
 	}
 
-	tagsObj, ok := item.GetResource().GetData().GetFields()["tags"]
-	if !ok {
-		return nil
-	}
-
-	structValue := tagsObj.GetStructValue()
-	if structValue == nil {
-		return nil
-	}
-
-	items, ok := structValue.GetFields()["items"]
-	if !ok {
-		return nil
-	}
-
-	tagValues := items.GetListValue().GetValues()
-	tags := make([]string, len(tagValues))
-	for i, tag := range tagValues {
-		tags[i] = tag.GetStringValue()
-	}
-
-	return tags
+	return values([]string{"tags", "items"}, item.GetResource().GetData().AsMap())
 }
 
 func getAssetLabels(item *gcpinventory.ExtendedGcpAsset) map[string]string {
@@ -245,7 +201,7 @@ func getAssetLabels(item *gcpinventory.ExtendedGcpAsset) map[string]string {
 	return labelsMap
 }
 
-var assetEnrichers = map[string]func(item *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher{
+var assetEnrichers = map[string]func(item *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher{
 	gcpinventory.IamRoleAssetType:               noopEnricher,
 	gcpinventory.CrmFolderAssetType:             noopEnricher,
 	gcpinventory.CrmProjectAssetType:            noopEnricher,
@@ -262,15 +218,15 @@ var assetEnrichers = map[string]func(item *gcpinventory.ExtendedGcpAsset, pb *st
 	gcpinventory.CloudFunctionAssetType:         enrichCloudFunction,
 }
 
-func enrichOrganization(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichOrganization(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithOrganization(inventory.Organization{
-			Name: first(getPathValues([]string{"displayName"}, pb)),
+			Name: first(values([]string{"displayName"}, pb)),
 		}),
 	}
 }
 
-func enrichComputeInstance(item *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichComputeInstance(item *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithCloud(inventory.Cloud{
 			// This will override the default Cloud pb, so we re-add the common ones
@@ -280,115 +236,118 @@ func enrichComputeInstance(item *gcpinventory.ExtendedGcpAsset, pb *structpb.Str
 			ProjectID:        item.CloudAccount.OrganisationId,
 			ProjectName:      item.CloudAccount.OrganizationName,
 			ServiceName:      item.AssetType,
-			InstanceID:       first(getPathValues([]string{"id"}, pb)),
-			InstanceName:     first(getPathValues([]string{"name"}, pb)),
-			MachineType:      first(getPathValues([]string{"machineType"}, pb)),
-			AvailabilityZone: first(getPathValues([]string{"zone"}, pb)),
+			InstanceID:       first(values([]string{"id"}, pb)),
+			InstanceName:     first(values([]string{"name"}, pb)),
+			MachineType:      first(values([]string{"machineType"}, pb)),
+			AvailabilityZone: first(values([]string{"zone"}, pb)),
 		}),
 		inventory.WithHost(inventory.Host{
-			ID: first(getPathValues([]string{"id"}, pb)),
+			ID: first(values([]string{"id"}, pb)),
 		}),
 		inventory.WithNetwork(inventory.Network{
-			Name: getPathValues([]string{"networkInterfaces", "name"}, pb),
+			Name: values([]string{"networkInterfaces", "name"}, pb),
 		}),
 	}
 }
 
-func enrichFirewall(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichFirewall(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithNetwork(inventory.Network{
-			Name:      getPathValues([]string{"name"}, pb),
-			Direction: first(getPathValues([]string{"direction"}, pb)),
+			Name:      values([]string{"name"}, pb),
+			Direction: first(values([]string{"direction"}, pb)),
 		}),
 	}
 }
 
-func enrichSubnetwork(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichSubnetwork(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithNetwork(inventory.Network{
-			Name: getPathValues([]string{"name"}, pb),
-			Type: strings.ToLower(first(getPathValues([]string{"stackType"}, pb))),
+			Name: values([]string{"name"}, pb),
+			Type: strings.ToLower(first(values([]string{"stackType"}, pb))),
 		}),
 	}
 }
 
-func enrichServiceAccount(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichServiceAccount(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithUser(inventory.User{
-			Email: first(getPathValues([]string{"email"}, pb)),
-			Name:  first(getPathValues([]string{"displayName"}, pb)),
+			Email: first(values([]string{"email"}, pb)),
+			Name:  first(values([]string{"displayName"}, pb)),
 		}),
 	}
 }
 
-func enrichGkeCluster(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichGkeCluster(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithOrchestrator(inventory.Orchestrator{
 			Type:        "kubernetes",
-			ClusterName: first(getPathValues([]string{"name"}, pb)),
-			ClusterID:   first(getPathValues([]string{"id"}, pb)),
+			ClusterName: first(values([]string{"name"}, pb)),
+			ClusterID:   first(values([]string{"id"}, pb)),
 		}),
 	}
 }
 
-func enrichForwardingRule(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichForwardingRule(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithCloud(inventory.Cloud{
-			Region: first(getPathValues([]string{"region"}, pb)),
+			Region: first(values([]string{"region"}, pb)),
 		}),
 	}
 }
 
-func enrichCloudFunction(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichCloudFunction(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithURL(inventory.URL{
-			Full: first(getPathValues([]string{"url"}, pb)),
+			Full: first(values([]string{"url"}, pb)),
 		}),
 		inventory.WithFass(inventory.Fass{
-			Name:    first(getPathValues([]string{"name"}, pb)),
-			Version: first(getPathValues([]string{"serviceConfig", "revision"}, pb)),
+			Name:    first(values([]string{"name"}, pb)),
+			Version: first(values([]string{"serviceConfig", "revision"}, pb)),
 		}),
 	}
 }
 
-func enrichCloudRunService(_ *gcpinventory.ExtendedGcpAsset, pb *structpb.Struct) []inventory.AssetEnricher {
+func enrichCloudRunService(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithContainer(inventory.Container{
-			Name:      getPathValues([]string{"spec", "template", "spec", "containers", "name"}, pb),
-			ImageName: getPathValues([]string{"spec", "template", "spec", "containers", "image"}, pb),
+			Name:      values([]string{"spec", "template", "spec", "containers", "name"}, pb),
+			ImageName: values([]string{"spec", "template", "spec", "containers", "image"}, pb),
 		}),
 	}
 }
 
-func noopEnricher(_ *gcpinventory.ExtendedGcpAsset, _ *structpb.Struct) []inventory.AssetEnricher {
+func noopEnricher(_ *gcpinventory.ExtendedGcpAsset, _ map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{}
 }
 
-func getPathValues(keys []string, pb *structpb.Struct) []string {
-	m := pb.AsMap()
-
-	var values []string
-	var current interface{} = m
-
-	for _, key := range keys {
-		if subMap, ok := current.(map[string]interface{}); ok {
-			current = subMap[key]
-		} else {
-			return nil
+// traverse maps and arrays by keys path to collect string values
+func values(keys []string, current any) []string {
+	if len(keys) == 0 {
+		switch v := current.(type) {
+		case string:
+			return []string{v}
+		case []any:
+			var results []string
+			for _, item := range v {
+				results = append(results, values(keys, item)...)
+			}
+			return results
 		}
+		return nil
 	}
 
 	switch v := current.(type) {
-	case []interface{}:
+	case map[string]any:
+		return values(keys[1:], v[keys[0]])
+	case []any:
+		var results []string
 		for _, item := range v {
-			if str, ok := item.(string); ok {
-				values = append(values, str)
-			}
+			results = append(results, values(keys, item)...)
 		}
-	case string:
-		values = append(values, v)
+		return results
 	}
-	return values
+
+	return nil
 }
 
 func first(values []string) string {
