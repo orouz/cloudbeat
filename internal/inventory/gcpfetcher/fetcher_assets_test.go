@@ -116,6 +116,10 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 					"machineType": "machineType",
 					"zone":        "zone",
 					"labels":      map[string]any{"key": "value"},
+					"networkInterfaces": []any{
+						map[string]any{"name": "nic0"},
+						map[string]any{"name": "nic1"},
+					},
 				}),
 			},
 			enrichments: inventory.AssetEvent{
@@ -129,6 +133,9 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 					ID: "id",
 				},
 				Labels: map[string]string{"key": "value"},
+				Network: &inventory.Network{
+					Name: []string{"nic0", "nic1"},
+				},
 			},
 		},
 		gcpinventory.ComputeFirewallAssetType: {
@@ -141,7 +148,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 			enrichments: inventory.AssetEvent{
 				Network: &inventory.Network{
 					Direction: "INGRESS",
-					Name:      "default-allow-ssh",
+					Name:      []string{"default-allow-ssh"},
 				},
 			},
 		},
@@ -154,7 +161,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 			},
 			enrichments: inventory.AssetEvent{
 				Network: &inventory.Network{
-					Name: "subnetwork",
+					Name: []string{"subnetwork"},
 					Type: "ipv4_only",
 				},
 			},
@@ -269,9 +276,9 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 }
 
 func NewStructMap(data map[string]any) *structpb.Struct {
-	dataStruct, err := structpb.NewStruct(data)
+	dataStruct, err := structpb.NewValue(data)
 	if err != nil {
 		panic(err)
 	}
-	return dataStruct
+	return dataStruct.GetStructValue()
 }
