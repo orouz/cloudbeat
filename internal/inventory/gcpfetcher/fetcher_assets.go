@@ -218,7 +218,7 @@ var assetEnrichers = map[string]func(item *gcpinventory.ExtendedGcpAsset, pb map
 func enrichOrganization(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithOrganization(inventory.Organization{
-			Name: first(values([]string{"displayName"}, pb)),
+			Name: lo.FirstOrEmpty(values([]string{"displayName"}, pb)),
 		}),
 	}
 }
@@ -233,13 +233,13 @@ func enrichComputeInstance(item *gcpinventory.ExtendedGcpAsset, pb map[string]an
 			ProjectID:        item.CloudAccount.OrganisationId,
 			ProjectName:      item.CloudAccount.OrganizationName,
 			ServiceName:      item.AssetType,
-			InstanceID:       first(values([]string{"id"}, pb)),
-			InstanceName:     first(values([]string{"name"}, pb)),
-			MachineType:      first(values([]string{"machineType"}, pb)),
-			AvailabilityZone: first(values([]string{"zone"}, pb)),
+			InstanceID:       lo.FirstOrEmpty(values([]string{"id"}, pb)),
+			InstanceName:     lo.FirstOrEmpty(values([]string{"name"}, pb)),
+			MachineType:      lo.FirstOrEmpty(values([]string{"machineType"}, pb)),
+			AvailabilityZone: lo.FirstOrEmpty(values([]string{"zone"}, pb)),
 		}),
 		inventory.WithHost(inventory.Host{
-			ID: first(values([]string{"id"}, pb)),
+			ID: lo.FirstOrEmpty(values([]string{"id"}, pb)),
 		}),
 		inventory.WithNetwork(inventory.Network{
 			Name: values([]string{"networkInterfaces", "name"}, pb),
@@ -251,7 +251,7 @@ func enrichFirewall(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inven
 	return []inventory.AssetEnricher{
 		inventory.WithNetwork(inventory.Network{
 			Name:      values([]string{"name"}, pb),
-			Direction: first(values([]string{"direction"}, pb)),
+			Direction: lo.FirstOrEmpty(values([]string{"direction"}, pb)),
 		}),
 	}
 }
@@ -260,7 +260,7 @@ func enrichSubnetwork(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inv
 	return []inventory.AssetEnricher{
 		inventory.WithNetwork(inventory.Network{
 			Name: values([]string{"name"}, pb),
-			Type: strings.ToLower(first(values([]string{"stackType"}, pb))),
+			Type: strings.ToLower(lo.FirstOrEmpty(values([]string{"stackType"}, pb))),
 		}),
 	}
 }
@@ -268,8 +268,8 @@ func enrichSubnetwork(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inv
 func enrichServiceAccount(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithUser(inventory.User{
-			Email: first(values([]string{"email"}, pb)),
-			Name:  first(values([]string{"displayName"}, pb)),
+			Email: lo.FirstOrEmpty(values([]string{"email"}, pb)),
+			Name:  lo.FirstOrEmpty(values([]string{"displayName"}, pb)),
 		}),
 	}
 }
@@ -278,8 +278,8 @@ func enrichGkeCluster(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inv
 	return []inventory.AssetEnricher{
 		inventory.WithOrchestrator(inventory.Orchestrator{
 			Type:        "kubernetes",
-			ClusterName: first(values([]string{"name"}, pb)),
-			ClusterID:   first(values([]string{"id"}, pb)),
+			ClusterName: lo.FirstOrEmpty(values([]string{"name"}, pb)),
+			ClusterID:   lo.FirstOrEmpty(values([]string{"id"}, pb)),
 		}),
 	}
 }
@@ -294,7 +294,7 @@ func enrichForwardingRule(item *gcpinventory.ExtendedGcpAsset, pb map[string]any
 			ProjectID:   item.CloudAccount.OrganisationId,
 			ProjectName: item.CloudAccount.OrganizationName,
 			ServiceName: item.AssetType,
-			Region:      first(values([]string{"region"}, pb)),
+			Region:      lo.FirstOrEmpty(values([]string{"region"}, pb)),
 		}),
 	}
 }
@@ -302,11 +302,11 @@ func enrichForwardingRule(item *gcpinventory.ExtendedGcpAsset, pb map[string]any
 func enrichCloudFunction(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithURL(inventory.URL{
-			Full: first(values([]string{"url"}, pb)),
+			Full: lo.FirstOrEmpty(values([]string{"url"}, pb)),
 		}),
 		inventory.WithFass(inventory.Fass{
-			Name:    first(values([]string{"name"}, pb)),
-			Version: first(values([]string{"serviceConfig", "revision"}, pb)),
+			Name:    lo.FirstOrEmpty(values([]string{"name"}, pb)),
+			Version: lo.FirstOrEmpty(values([]string{"serviceConfig", "revision"}, pb)),
 		}),
 	}
 }
@@ -352,11 +352,4 @@ func values(keys []string, current any) []string {
 	}
 
 	return []string{}
-}
-
-func first(values []string) string {
-	if len(values) == 0 {
-		return ""
-	}
-	return values[0]
 }

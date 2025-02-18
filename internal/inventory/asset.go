@@ -162,7 +162,7 @@ type AssetEvent struct {
 }
 
 type Related struct {
-	Id []string `json:"id,omitempty"`
+	Entity []string `json:"id,omitempty"`
 }
 
 type Organization struct {
@@ -279,7 +279,7 @@ func WithRelatedAssetIds(ids []string) AssetEnricher {
 			return
 		}
 		a.Related = &Related{
-			Id: lo.Uniq(ids),
+			Entity: lo.Uniq(ids),
 		}
 	}
 }

@@ -122,7 +122,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 				Labels: map[string]string{"org": "security"},
 				Tags:   []string{"tag1", "tag2"},
 				Related: &inventory.Related{
-					Id: []string{"roles/owner", "user:a", "user:b"},
+					Entity: []string{"roles/owner", "user:a", "user:b"},
 				},
 			},
 		},
@@ -138,7 +138,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 			event: inventory.AssetEvent{
 				Cloud: defaultCloud,
 				Related: &inventory.Related{
-					Id: []string{"roles/owner", "user:a", "user:b"},
+					Entity: []string{"roles/owner", "user:a", "user:b"},
 				},
 			},
 		},
@@ -161,7 +161,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 					Name: "org",
 				},
 				Related: &inventory.Related{
-					Id: []string{"organizations/<org UUID>"},
+					Entity: []string{"organizations/<org UUID>"},
 				},
 			},
 		},
@@ -207,7 +207,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 					Name: []string{"nic0", "nic1"},
 				},
 				Related: &inventory.Related{
-					Id: []string{"n1", "n2", "s1", "s2", "sa1@<project UUID>.iam.gserviceaccount.com", "sa2@<project UUID>.iam.gserviceaccount.com", "disk1", "disk2", "machineType", "zone"},
+					Entity: []string{"n1", "n2", "s1", "s2", "sa1@<project UUID>.iam.gserviceaccount.com", "sa2@<project UUID>.iam.gserviceaccount.com", "disk1", "disk2", "machineType", "zone"},
 				},
 			},
 		},
@@ -226,7 +226,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 					Name:      []string{"default-allow-ssh"},
 				},
 				Related: &inventory.Related{
-					Id: []string{"default"},
+					Entity: []string{"default"},
 				},
 			},
 		},
@@ -245,7 +245,7 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 					Type: "ipv4_only",
 				},
 				Related: &inventory.Related{
-					Id: []string{"network"},
+					Entity: []string{"network"},
 				},
 			},
 		},

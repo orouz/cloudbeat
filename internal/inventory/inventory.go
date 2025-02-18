@@ -126,7 +126,7 @@ func (a *AssetInventory) publish(assets []AssetEvent) {
 	events := lo.Map(assets, func(e AssetEvent, _ int) beat.Event {
 		relatedEntity := []string{e.Entity.Id}
 		if e.Related != nil {
-			relatedEntity = append(relatedEntity, e.Related.Id...)
+			relatedEntity = append(relatedEntity, e.Related.Entity...)
 		}
 		return beat.Event{
 			Meta:      mapstr.M{libevents.FieldMetaIndex: generateIndex(e.Entity)},
