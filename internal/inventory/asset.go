@@ -158,6 +158,11 @@ type AssetEvent struct {
 	Labels        map[string]string
 	Tags          []string
 	RawAttributes *any
+	Related       *Related
+}
+
+type Related struct {
+	Id []string `json:"id,omitempty"`
 }
 
 type Organization struct {
@@ -179,9 +184,6 @@ type Entity struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 	AssetClassification
-
-	// non exported fields
-	relatedEntityId []string
 }
 
 type Event struct {
@@ -272,16 +274,13 @@ func WithRawAsset(raw any) AssetEnricher {
 
 func WithRelatedAssetIds(ids []string) AssetEnricher {
 	return func(a *AssetEvent) {
-		ids = lo.Filter(ids, func(id string, _ int) bool {
-			return id != ""
-		})
-
+		ids = lo.Compact(ids)
 		if len(ids) == 0 {
-			a.Entity.relatedEntityId = nil
 			return
 		}
-
-		a.Entity.relatedEntityId = lo.Uniq(ids)
+		a.Related = &Related{
+			Id: lo.Uniq(ids),
+		}
 	}
 }
 

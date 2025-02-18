@@ -95,7 +95,7 @@ func getAssetEvent(classification inventory.AssetClassification, item *gcpinvent
 		inventory.WithLabels(getAssetLabels(item)),
 		inventory.WithTags(getAssetTags(item)),
 		inventory.WithRelatedAssetIds(
-			findRelatedAssetIds(classification.Type, item),
+			findRelatedAssetIds(item),
 		),
 		// Any asset type enrichers also setting Cloud fields will need to re-add these fields below
 		inventory.WithCloud(inventory.Cloud{
@@ -123,30 +123,27 @@ func getAssetEvent(classification inventory.AssetClassification, item *gcpinvent
 	)
 }
 
-func findRelatedAssetIds(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
+func findRelatedAssetIds(item *gcpinventory.ExtendedGcpAsset) []string {
 	ids := []string{}
 	ids = append(ids, item.Ancestors...)
 	if item.Resource != nil {
 		ids = append(ids, item.Resource.Parent)
 	}
-
-	ids = append(ids, findRelatedAssetIdsForType(t, item)...)
-
+	ids = append(ids, findRelatedAssetIdsForType(item)...)
 	ids = lo.Compact(ids)
 	ids = lo.Uniq(ids)
 	return ids
 }
 
-func findRelatedAssetIdsForType(t inventory.AssetType, item *gcpinventory.ExtendedGcpAsset) []string {
-	if !hasResourceData(item) {
-		return nil
+func findRelatedAssetIdsForType(item *gcpinventory.ExtendedGcpAsset) []string {
+	ids := []string{}
+	var pb map[string]any
+	if hasResourceData(item) {
+		pb = item.GetResource().GetData().AsMap()
 	}
 
-	ids := []string{}
-	pb := item.GetResource().GetData()
-
-	switch t {
-	case inventory.AssetClassificationGcpInstance.Type:
+	switch item.AssetType {
+	case gcpinventory.ComputeInstanceAssetType:
 		ids = append(ids, values([]string{"networkInterfaces", "network"}, pb)...)
 		ids = append(ids, values([]string{"networkInterfaces", "subnetwork"}, pb)...)
 		ids = append(ids, values([]string{"serviceAccounts", "email"}, pb)...)
@@ -154,9 +151,9 @@ func findRelatedAssetIdsForType(t inventory.AssetType, item *gcpinventory.Extend
 		ids = append(ids, values([]string{"machineType"}, pb)...)
 		ids = append(ids, values([]string{"zone"}, pb)...)
 
-	case inventory.AssetClassificationGcpFirewall.Type, inventory.AssetClassificationGcpSubnet.Type:
+	case gcpinventory.ComputeFirewallAssetType, gcpinventory.ComputeSubnetworkAssetType:
 		ids = append(ids, values([]string{"network"}, pb)...)
-	case inventory.AssetClassificationGcpProject.Type, inventory.AssetClassificationGcpBucket.Type:
+	case gcpinventory.CrmProjectAssetType, gcpinventory.StorageBucketAssetType:
 		if item.IamPolicy == nil {
 			break
 		}
@@ -287,10 +284,17 @@ func enrichGkeCluster(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inv
 	}
 }
 
-func enrichForwardingRule(_ *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
+func enrichForwardingRule(item *gcpinventory.ExtendedGcpAsset, pb map[string]any) []inventory.AssetEnricher {
 	return []inventory.AssetEnricher{
 		inventory.WithCloud(inventory.Cloud{
-			Region: first(values([]string{"region"}, pb)),
+			// This will override the default Cloud pb, so we re-add the common ones
+			Provider:    inventory.GcpCloudProvider,
+			AccountID:   item.CloudAccount.AccountId,
+			AccountName: item.CloudAccount.AccountName,
+			ProjectID:   item.CloudAccount.OrganisationId,
+			ProjectName: item.CloudAccount.OrganizationName,
+			ServiceName: item.AssetType,
+			Region:      first(values([]string{"region"}, pb)),
 		}),
 	}
 }
@@ -320,7 +324,7 @@ func noopEnricher(_ *gcpinventory.ExtendedGcpAsset, _ map[string]any) []inventor
 	return []inventory.AssetEnricher{}
 }
 
-// traverse maps and arrays by keys path to collect string values
+// returns string values of keys in a map/array
 func values(keys []string, current any) []string {
 	if len(keys) == 0 {
 		switch v := current.(type) {
