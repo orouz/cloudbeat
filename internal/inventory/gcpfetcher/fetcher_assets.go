@@ -337,7 +337,7 @@ func values(keys []string, current any) []string {
 			}
 			return results
 		}
-		return nil
+		return []string{}
 	}
 
 	switch v := current.(type) {
@@ -351,7 +351,7 @@ func values(keys []string, current any) []string {
 		return results
 	}
 
-	return nil
+	return []string{}
 }
 
 func first(values []string) string {

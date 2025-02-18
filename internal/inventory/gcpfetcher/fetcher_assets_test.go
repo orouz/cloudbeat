@@ -21,16 +21,17 @@ import (
 	"testing"
 
 	"cloud.google.com/go/asset/apiv1/assetpb"
-	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/iam/apiv1/iampb"
+	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"google.golang.org/protobuf/types/known/structpb"
+
 	"github.com/elastic/cloudbeat/internal/infra/clog"
 	"github.com/elastic/cloudbeat/internal/inventory"
 	"github.com/elastic/cloudbeat/internal/inventory/testutil"
 	"github.com/elastic/cloudbeat/internal/resources/fetching"
 	gcpinventory "github.com/elastic/cloudbeat/internal/resources/providers/gcplib/inventory"
-	"github.com/samber/lo"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestAccountFetcher_Fetch_Assets(t *testing.T) {
@@ -378,7 +379,6 @@ func TestAccountFetcher_EnrichAsset(t *testing.T) {
 		assert.Equalf(t, expected.Organization, actual.Organization, "Asset %v failed %v fields", r.assetType, "Organization")
 		assert.Equalf(t, expected.Labels, actual.Labels, "Asset %v failed %v fields", r.assetType, "Labels")
 		assert.Equalf(t, expected.Tags, actual.Tags, "Asset %v failed %v fields", r.assetType, "Tags")
-
 	}
 }
 
@@ -411,6 +411,11 @@ func TestAccountFetcher_Values(t *testing.T) {
 			data:     map[string]any{"items": []any{"tag1", "tag2"}},
 			path:     []string{"items"},
 			expected: []string{"tag1", "tag2"},
+		},
+		{
+			data:     map[string]any{"name": "value"},
+			path:     []string{"not-exist"},
+			expected: []string{},
 		},
 	}
 
