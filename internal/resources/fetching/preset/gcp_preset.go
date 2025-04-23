@@ -32,24 +32,24 @@ func NewCisGcpFetchers(ctx context.Context, log *clog.Logger, ch chan fetching.R
 	log.Infof("Initializing GCP fetchers")
 	m := make(registry.FetchersMap)
 
-	assetsFetcher := fetchers.NewGcpAssetsFetcher(ctx, log, ch, inventory)
-	m["gcp_cloud_assets_fetcher"] = registry.RegisteredFetcher{Fetcher: assetsFetcher}
+	// assetsFetcher := fetchers.NewGcpAssetsFetcher(ctx, log, ch, inventory)
+	// m["gcp_cloud_assets_fetcher"] = registry.RegisteredFetcher{Fetcher: assetsFetcher}
 
 	monitoringFetcher := fetchers.NewGcpMonitoringFetcher(ctx, log, ch, inventory)
 	m["gcp_monitoring_fetcher"] = registry.RegisteredFetcher{Fetcher: monitoringFetcher}
 
-	serviceUsageFetcher := fetchers.NewGcpServiceUsageFetcher(ctx, log, ch, inventory)
-	m["gcp_service_usage_fetcher"] = registry.RegisteredFetcher{Fetcher: serviceUsageFetcher}
+	// serviceUsageFetcher := fetchers.NewGcpServiceUsageFetcher(ctx, log, ch, inventory)
+	// m["gcp_service_usage_fetcher"] = registry.RegisteredFetcher{Fetcher: serviceUsageFetcher}
 
-	// The logging fetcher is only available for the organization scope as it requires the Cloud Asset Inventory API
-	// to be enabled for the organization/folders level.
-	if cfg.AccountType == config.OrganizationAccount {
-		loggingFetcher := fetchers.NewGcpLogSinkFetcher(ctx, log, ch, inventory)
-		m["gcp_logging_fetcher"] = registry.RegisteredFetcher{Fetcher: loggingFetcher}
+	// // The logging fetcher is only available for the organization scope as it requires the Cloud Asset Inventory API
+	// // to be enabled for the organization/folders level.
+	// if cfg.AccountType == config.OrganizationAccount {
+	// 	loggingFetcher := fetchers.NewGcpLogSinkFetcher(ctx, log, ch, inventory)
+	// 	m["gcp_logging_fetcher"] = registry.RegisteredFetcher{Fetcher: loggingFetcher}
 
-		policiesFetcher := fetchers.NewGcpPoliciesFetcher(ctx, log, ch, inventory)
-		m["gcp_policies_fetcher"] = registry.RegisteredFetcher{Fetcher: policiesFetcher}
-	}
+	// 	policiesFetcher := fetchers.NewGcpPoliciesFetcher(ctx, log, ch, inventory)
+	// 	m["gcp_policies_fetcher"] = registry.RegisteredFetcher{Fetcher: policiesFetcher}
+	// }
 
 	return m, nil
 }

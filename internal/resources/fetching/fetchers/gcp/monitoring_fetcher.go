@@ -20,12 +20,15 @@ package fetchers
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
+	"cloud.google.com/go/asset/apiv1/assetpb"
 	"github.com/elastic/cloudbeat/internal/infra/clog"
 	"github.com/elastic/cloudbeat/internal/resources/fetching"
 	"github.com/elastic/cloudbeat/internal/resources/fetching/cycle"
 	"github.com/elastic/cloudbeat/internal/resources/providers/gcplib"
 	"github.com/elastic/cloudbeat/internal/resources/providers/gcplib/inventory"
+	"google.golang.org/protobuf/proto"
 )
 
 type GcpMonitoringFetcher struct {
@@ -54,6 +57,42 @@ var monitoringAssetTypes = map[string][]string{
 	"AlertPolicy": {inventory.MonitoringAlertPolicyAssetType},
 }
 
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func randString(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
+}
+
+func cloneAsset(e *inventory.ExtendedGcpAsset) *inventory.ExtendedGcpAsset {
+	n := &inventory.ExtendedGcpAsset{}
+	n.CloudAccount = e.CloudAccount
+	n.Asset = proto.Clone(e.Asset).(*assetpb.Asset)
+	n.Asset.Name += "_" + randString(10)
+	return n
+}
+
+func extendMonitoringAsset(original *inventory.MonitoringAsset) *inventory.MonitoringAsset {
+	clone := &inventory.MonitoringAsset{
+		CloudAccount: original.CloudAccount,
+		LogMetrics:   make([]*inventory.ExtendedGcpAsset, 0, 10000),
+		Alerts:       make([]*inventory.ExtendedGcpAsset, 0, 10000),
+	}
+
+	for i := 0; i < 10000; i++ {
+		if len(original.LogMetrics) > 0 {
+			clone.LogMetrics = append(clone.LogMetrics, cloneAsset(original.LogMetrics[i%len(original.LogMetrics)]))
+		}
+		if len(original.Alerts) > 0 {
+			clone.Alerts = append(clone.Alerts, cloneAsset(original.Alerts[i%len(original.Alerts)]))
+		}
+	}
+	return clone
+}
+
 func (f *GcpMonitoringFetcher) Fetch(ctx context.Context, cycleMetadata cycle.Metadata) error {
 	f.log.Info("Starting GcpMonitoringFetcher.Fetch")
 
@@ -72,7 +111,7 @@ func (f *GcpMonitoringFetcher) Fetch(ctx context.Context, cycleMetadata cycle.Me
 			Resource: &GcpMonitoringAsset{
 				Type:    fetching.MonitoringIdentity,
 				subType: fetching.GcpMonitoringType,
-				Asset:   monitoringAsset,
+				Asset:   extendMonitoringAsset(monitoringAsset),
 			},
 		}:
 		}
